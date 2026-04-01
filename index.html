@@ -5,153 +5,118 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IdiomVault — Flashcards</title>
 <link rel="stylesheet" href="style.css">
-<!-- html2canvas for PNG download -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════════
-     ONBOARDING SCREEN — shown only on first visit
-══════════════════════════════════════════════════════════════ -->
+<!-- ══ ONBOARDING ══ -->
 <div id="onboardingScreen">
   <div class="ob-card">
     <div class="ob-logo">IdiomVault</div>
     <span class="ob-logo-by">by BODY</span>
     <p class="ob-tagline">Master English idioms the smart way.<br>Tell us a little about yourself to get started.</p>
-
     <div class="ob-field">
       <label class="ob-label" for="obName">Your first name</label>
-      <input class="ob-input" id="obName" type="text" maxlength="24"
-             placeholder="e.g. Alex" autocomplete="given-name">
+      <input class="ob-input" id="obName" type="text" maxlength="24" placeholder="e.g. Alex" autocomplete="given-name">
     </div>
-
     <div class="ob-field">
       <label class="ob-label" for="obEmail">Your email — for daily reminders</label>
-      <input class="ob-input" id="obEmail" type="email"
-             placeholder="e.g. alex@gmail.com" autocomplete="email">
+      <input class="ob-input" id="obEmail" type="email" placeholder="e.g. alex@gmail.com" autocomplete="email">
     </div>
-
     <button class="ob-submit" onclick="saveOnboarding()">Enter the Vault →</button>
     <span class="ob-skip" onclick="skipOnboarding()">Skip for now — explore first</span>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     EMAIL MODAL
-══════════════════════════════════════════════════════════════ -->
+<!-- ══ EMAIL MODAL ══ -->
 <div class="modal-backdrop" id="emailModal">
   <div class="modal-card">
     <div id="emailModalForm">
       <div class="modal-title">📬 Expression of the Day</div>
-      <p class="modal-sub">
-        Send today's expression to your inbox and receive daily reminders to keep your streak alive.
-      </p>
-
+      <p class="modal-sub">Send today's expression to your inbox and receive daily reminders to keep your streak alive.</p>
       <div class="email-preview" id="emailPreview">
         <div class="email-preview-label">Today's Expression</div>
         <div class="email-preview-expr" id="previewExpr">"Loading…"</div>
         <div class="email-preview-meaning" id="previewMeaning"></div>
       </div>
-
-      <input class="modal-email-input" id="modalEmailInput"
-             type="email" placeholder="Your email address">
-
-      <button class="modal-btn-send" onclick="sendEmailReminder()">
-        📨 Send to My Inbox
-      </button>
+      <input class="modal-email-input" id="modalEmailInput" type="email" placeholder="Your email address">
+      <button class="modal-btn-send" onclick="sendEmailReminder()">📨 Send to My Inbox</button>
       <button class="modal-btn-cancel" onclick="closeEmailModal()">Cancel</button>
     </div>
     <div class="modal-success" id="emailModalSuccess" style="display:none;">
       <div class="modal-success-icon">✅</div>
       <div class="modal-success-title">Email sent!</div>
-      <p class="modal-success-msg">
-        The expression <strong id="successExpr"></strong> has been sent to <strong id="successEmail"></strong>.<br><br>
-        You'll receive a daily expression every morning to keep your learning on track. 🔥
-      </p>
-      <button class="modal-btn-cancel" onclick="closeEmailModal()" style="margin-top:20px;">
-        Close
-      </button>
+      <p class="modal-success-msg">The expression <strong id="successExpr"></strong> has been sent to <strong id="successEmail"></strong>.<br><br>You'll receive a daily expression every morning to keep your learning on track. 🔥</p>
+      <button class="modal-btn-cancel" onclick="closeEmailModal()" style="margin-top:20px;">Close</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     NAVIGATION
-══════════════════════════════════════════════════════════════ -->
+<!-- ══ NAV ══ -->
 <nav class="nav">
   <div class="nav-logo">IdiomVault <span>by BODY</span></div>
   <div class="nav-links">
-    <a href="index.html"    class="nav-link active"><span class="nl-icon">🃏</span><span class="nl-text">Cards</span></a>
-    <a href="quiz.html"     class="nav-link"><span class="nl-icon">⚡</span><span class="nl-text">Quiz</span></a>
-    <a href="review.html"   class="nav-link"><span class="nl-icon">🔁</span><span class="nl-text">Review</span></a>
-    <a href="progress.html" class="nav-link"><span class="nl-icon">📊</span><span class="nl-text">Progress</span></a>
+    <a href="index.html"     class="nav-link active"><span class="nl-icon">🃏</span><span class="nl-text">Cards</span></a>
+    <a href="quiz.html"      class="nav-link"><span class="nl-icon">⚡</span><span class="nl-text">Quiz</span></a>
+    <a href="review.html"    class="nav-link"><span class="nl-icon">🔁</span><span class="nl-text">Review</span></a>
+    <a href="challenge.html" class="nav-link"><span class="nl-icon">🧠</span><span class="nl-text">Challenge</span></a>
+    <a href="progress.html"  class="nav-link"><span class="nl-icon">📊</span><span class="nl-text">Progress</span></a>
   </div>
   <div class="nav-xp">
-    <div class="nav-user-badge" id="navUserBadge" style="display:none;">
-      👤 <span id="navUserName"></span>
-    </div>
+    <div class="nav-user-badge" id="navUserBadge" style="display:none;">👤 <span id="navUserName"></span></div>
     <div class="streak-pill" id="navStreak">🔥 0</div>
-    <div class="xp-pill"     id="navXP">⭐ 0 XP</div>
+    <div class="xp-pill" id="navXP">⭐ 0 XP</div>
   </div>
 </nav>
 
-<!-- ═══ XP POP ═══ -->
 <div class="xp-pop" id="xpPop">+10 XP</div>
-
-<!-- ═══ TOAST ═══ -->
 <div class="toast" id="toast"></div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     PAGE
-══════════════════════════════════════════════════════════════ -->
 <div class="page">
   <div class="container">
 
-    <!-- Hero — updated with personalized greeting -->
     <div class="page-hero">
       <h1 class="page-hero-title" id="heroTitle"><em>Flashcard</em> Mode</h1>
       <p class="page-hero-sub" id="heroSub">Tap any card to reveal its meaning</p>
     </div>
 
-    <!-- Stats strip -->
-    <div class="stat-strip">
-      <div class="stat-item">
-        <span class="stat-val" id="statTotal">198</span>
-        <span class="stat-lbl">Total</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val" id="statLearned">0</span>
-        <span class="stat-lbl">Learned</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val" id="statDifficult">0</span>
-        <span class="stat-lbl">Review</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val" id="statPct">0%</span>
-        <span class="stat-lbl">Done</span>
-      </div>
+    <!-- Mascot banner -->
+    <div class="mascot-banner" id="mascotBanner">
+      <div class="mascot-emoji" id="mascotEmoji">🦊</div>
+      <div class="mascot-msg" id="mascotMsg">Ready to learn? Your vocabulary is waiting.</div>
     </div>
 
-    <!-- Type filter tabs -->
+    <!-- SR due banner -->
+    <div class="sr-due-banner" id="srDueBanner" style="display:none;">
+      <span id="srDueText">📅 3 expressions due for review</span>
+      <a href="review.html" id="srDueLink">Review now →</a>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-item"><span class="stat-val" id="statTotal">198</span><span class="stat-lbl">Total</span></div>
+      <div class="stat-item"><span class="stat-val" id="statLearned">0</span><span class="stat-lbl">Learned</span></div>
+      <div class="stat-item"><span class="stat-val" id="statDue">0</span><span class="stat-lbl">Due</span></div>
+      <div class="stat-item"><span class="stat-val" id="statPct">0%</span><span class="stat-lbl">Done</span></div>
+    </div>
+
     <div class="filter-tabs" id="filterTabs">
       <button class="filter-tab on" data-type="All">All</button>
       <button class="filter-tab" data-type="idiom">Idiom</button>
       <button class="filter-tab" data-type="proverb">Proverb</button>
       <button class="filter-tab" data-type="slang">Slang</button>
       <button class="filter-tab" data-type="phrasal verb">Phrasal Verb</button>
+      <button class="filter-tab" data-type="Due" id="tabDue">📅 Due</button>
     </div>
 
-    <!-- Deck progress -->
     <div class="deck-info">
       <span id="deckPos">Card 1 of 198</span>
       <span id="deckPct">0% complete</span>
     </div>
-    <div class="progress-track" style="margin-bottom: 20px;">
+    <div class="progress-track" style="margin-bottom:20px;">
       <div class="progress-fill" id="deckProgressFill" style="width:0%"></div>
     </div>
 
-    <!-- ══ FLASHCARD ══ -->
+    <!-- Flashcard -->
     <div class="flashcard-wrap">
       <div class="flashcard" id="flashcard" onclick="revealCard()">
         <div class="card-top-bar" id="cardBar"></div>
@@ -160,18 +125,12 @@
             <span class="card-num" id="cardNum">#001</span>
             <span class="type-badge" id="cardType">idiom</span>
           </div>
+          <!-- SR status pill -->
+          <div id="cardSRStatus" style="margin-bottom:8px;"></div>
           <div class="card-expr" id="cardExpr">Loading…</div>
-          <div class="card-tap-hint" id="tapHint">
-            <span>👆</span> Tap to reveal meaning
-          </div>
-
-          <!-- Revealed section -->
+          <div class="card-tap-hint" id="tapHint"><span>👆</span> Tap to reveal meaning</div>
           <div class="card-revealed" id="cardRevealed">
-            <div class="card-divider">
-              <div class="card-divider-line"></div>
-              <div class="card-divider-dot"></div>
-              <div class="card-divider-line"></div>
-            </div>
+            <div class="card-divider"><div class="card-divider-line"></div><div class="card-divider-dot"></div><div class="card-divider-line"></div></div>
             <div class="meaning-label">Meaning</div>
             <div class="meaning-text" id="cardMeaning"></div>
             <div class="meaning-label" style="margin-top:16px;">Example</div>
@@ -181,159 +140,75 @@
       </div>
     </div>
 
-    <!-- ══ AUDIO ROW: US / UK / Full Read ══ -->
+    <!-- Audio row -->
     <div class="audio-row">
-      <button class="btn-audio" id="btnUS" onclick="speakCard('US')">
-        <span class="flag">🇺🇸</span> US <kbd>U</kbd>
-      </button>
-      <button class="btn-audio" id="btnUK" onclick="speakCard('UK')">
-        <span class="flag">🇬🇧</span> UK <kbd>B</kbd>
-      </button>
-      <button class="btn-audio" onclick="playFullCard()">
-        🎧 Full
-      </button>
+      <button class="btn-audio" id="btnUS" onclick="speakCard('US')"><span class="flag">🇺🇸</span> US <kbd>U</kbd></button>
+      <button class="btn-audio" id="btnUK" onclick="speakCard('UK')"><span class="flag">🇬🇧</span> UK <kbd>B</kbd></button>
+      <button class="btn-audio" onclick="playFullCard()">🎧 Full</button>
     </div>
 
-    <!-- ══ ACTION BUTTONS: Know / Review ══ -->
-    <div class="card-actions" id="cardActions" style="display:none; margin-bottom: 12px;">
-      <button class="btn btn-correct btn-lg" onclick="markKnown()">✓ I Know This <kbd>K</kbd></button>
-      <button class="btn btn-wrong btn-lg"   onclick="markDifficult()">↩ Review Again</button>
+    <!-- SR Rating buttons (shown after reveal) -->
+    <div id="srRatingRow" class="sr-rating-row" style="display:none;">
+      <button class="sr-btn missed"  onclick="rateSR('missed')">  <span class="sr-btn-emoji">😣</span>Raté<span class="sr-btn-emoji sr-interval" id="intMissed"></span></button>
+      <button class="sr-btn hard"    onclick="rateSR('hard')">    <span class="sr-btn-emoji">😬</span>Difficile<span class="sr-btn-emoji sr-interval" id="intHard"></span></button>
+      <button class="sr-btn correct" onclick="rateSR('correct')"> <span class="sr-btn-emoji">👍</span>Correct<span class="sr-btn-emoji sr-interval" id="intCorrect"></span></button>
+      <button class="sr-btn easy"    onclick="rateSR('easy')">    <span class="sr-btn-emoji">⚡</span>Facile<span class="sr-btn-emoji sr-interval" id="intEasy"></span></button>
     </div>
 
-    <!-- ══ NAVIGATION ROW: Prev / Random / Next ══ -->
+    <!-- Usage Forge panel (slides in after rating) -->
+    <div id="usageForgePanel" style="display:none;"></div>
+
+    <!-- Classic nav row -->
     <div class="action-row-3" style="margin-bottom:10px;">
       <button class="btn btn-ghost" onclick="prevCard()">← Prev</button>
       <button class="btn btn-ghost" id="btnRandom" onclick="randomCard()">🎲 <kbd>R</kbd></button>
       <button class="btn btn-ghost" onclick="nextCard()">Next →</button>
     </div>
 
-    <!-- ══ UTILITY ROW: Download PNG / Email ══ -->
     <div class="action-row-2">
-      <button class="btn-download" onclick="downloadCardAsPng()">
-        ⬇️ Save as PNG
-      </button>
-      <button class="btn-email" onclick="openEmailModal()">
-        📬 Email to Me
-      </button>
+      <button class="btn-download" onclick="downloadCardAsPng()">⬇️ Save as PNG</button>
+      <button class="btn-email" onclick="openEmailModal()">📬 Email to Me</button>
     </div>
 
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     HIDDEN CANVAS CARD — used for PNG rendering (off-screen)
-══════════════════════════════════════════════════════════════ -->
-<div id="pngCardWrap" style="
-  position:fixed;
-  top:-9999px; left:-9999px;
-  width:600px;
-  font-family:'DM Sans',system-ui,sans-serif;
-  background:#0a0a0a;
-  ">
-  <div id="pngCard" style="
-    background:#111111;
-    border:1px solid rgba(255,255,255,0.13);
-    border-radius:24px;
-    padding:44px 44px 36px;
-    color:#f0ece4;
-    width:600px;
-    box-sizing:border-box;
-    ">
-    <!-- Top accent bar -->
-    <div id="pngBar" style="
-      height:5px;
-      border-radius:3px;
-      margin-bottom:28px;
-      background:#a8f040;
-      "></div>
-    <!-- Logo row -->
+<!-- Hidden PNG card -->
+<div id="pngCardWrap" style="position:fixed;top:-9999px;left:-9999px;width:600px;font-family:'DM Sans',system-ui,sans-serif;background:#0a0a0a;">
+  <div id="pngCard" style="background:#111111;border:1px solid rgba(255,255,255,0.13);border-radius:24px;padding:44px 44px 36px;color:#f0ece4;width:600px;box-sizing:border-box;">
+    <div id="pngBar" style="height:5px;border-radius:3px;margin-bottom:28px;background:#a8f040;"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
       <div style="font-size:16px;font-weight:700;color:#a8f040;letter-spacing:-0.02em;">IdiomVault</div>
-      <div id="pngTypeBadge" style="
-        font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
-        padding:3px 12px;border-radius:999px;border:1px solid #4A8FD9;color:#4A8FD9;
-        ">idiom</div>
+      <div id="pngTypeBadge" style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:3px 12px;border-radius:999px;border:1px solid #4A8FD9;color:#4A8FD9;">idiom</div>
     </div>
-    <!-- Expression -->
-    <div id="pngExpr" style="
-      font-family:Georgia,serif;
-      font-size:38px;
-      font-weight:700;
-      font-style:italic;
-      line-height:1.15;
-      letter-spacing:-0.02em;
-      color:#f0ece4;
-      margin-bottom:28px;
-      ">"Loading…"</div>
-    <!-- Divider -->
+    <div id="pngExpr" style="font-family:Georgia,serif;font-size:38px;font-weight:700;font-style:italic;line-height:1.15;letter-spacing:-0.02em;color:#f0ece4;margin-bottom:28px;">"Loading…"</div>
     <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:24px;"></div>
-    <!-- Meaning -->
     <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#4a4540;margin-bottom:10px;">MEANING</div>
     <div id="pngMeaning" style="font-size:19px;line-height:1.5;color:#f0ece4;margin-bottom:24px;"></div>
-    <!-- Example -->
     <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#4a4540;margin-bottom:10px;">EXAMPLE</div>
-    <div id="pngExample" style="
-      font-family:Georgia,serif;
-      font-size:15px;
-      font-style:italic;
-      line-height:1.6;
-      color:#888070;
-      background:#161616;
-      border-left:3px solid rgba(255,255,255,0.22);
-      padding:12px 16px;
-      border-radius:0 6px 6px 0;
-      margin-bottom:32px;
-      "></div>
-    <!-- Footer -->
-    <div style="font-size:11px;color:#4a4540;letter-spacing:0.06em;text-align:right;">
-      IdiomVault by BODY · Learn English idioms daily
-    </div>
+    <div id="pngExample" style="font-family:Georgia,serif;font-size:15px;font-style:italic;line-height:1.6;color:#888070;background:#161616;border-left:3px solid rgba(255,255,255,0.22);padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:32px;"></div>
+    <div style="font-size:11px;color:#4a4540;letter-spacing:0.06em;text-align:right;">IdiomVault by BODY · Learn English idioms daily</div>
   </div>
 </div>
 
 <script src="data.js"></script>
 <script>
-/* ════════════════════════════════════════════════════════════
-   IdiomVault 3.0 — index.html
-   Features: onboarding · personalized greetings · audio US/UK/Full
-             PNG download (html2canvas) · email modal · random · keyboard
-════════════════════════════════════════════════════════════ */
-
-/* ── USER STORAGE KEY ─────────────────────────────────────── */
 const USER_KEY = 'iv3_user';
-
-/* ── MOTIVATIONAL GREETING POOL ──────────────────────────── */
-const GREETINGS_FIRST = [
-  n => `Welcome, <em>${n}!</em>`,
-  n => `Let's learn, <em>${n}!</em>`,
-];
 const GREETINGS_RETURN = [
-  n => `Welcome back, <em>${n}!</em>`,
-  n => `Keep going, <em>${n}!</em>`,
-  n => `You're on fire, <em>${n}!</em>`,
-  n => `Great to see you, <em>${n}!</em>`,
-  n => `Level up, <em>${n}!</em>`,
-  n => `Stay sharp, <em>${n}!</em>`,
+  n=>`Welcome back, <em>${n}!</em>`, n=>`Keep going, <em>${n}!</em>`,
+  n=>`You're on fire, <em>${n}!</em>`, n=>`Great to see you, <em>${n}!</em>`,
+  n=>`Level up, <em>${n}!</em>`, n=>`Stay sharp, <em>${n}!</em>`,
 ];
-const CORRECT_TOASTS = [
-  n => `✓ Brilliant, ${n}!`,
-  n => `✓ Excellent work, ${n}!`,
-  n => `✓ That's the spirit, ${n}!`,
-  n => `✓ You're unstoppable, ${n}!`,
-  n => `✓ Mastered! Keep it up, ${n}!`,
-];
+const GREETINGS_FIRST = [n=>`Welcome, <em>${n}!</em>`, n=>`Let's learn, <em>${n}!</em>`];
 
-/* ── CARD STATE ──────────────────────────────────────────── */
 let appState   = getState();
 let deck       = [...DATA];
 let deckIdx    = 0;
 let revealed   = false;
 let activeType = 'All';
-
-/* Audio tracking */
 let activeSpeakBtn = null;
+let pendingRating  = null; // rating chosen before usage forge
 
-/* ── INIT ────────────────────────────────────────────────── */
 (function init() {
   appState = updateStreak(appState);
   saveState(appState);
@@ -343,72 +218,78 @@ let activeSpeakBtn = null;
   renderStats();
   renderCard();
   setupFilterTabs();
+  renderMascot();
+  renderSRDueBanner();
 })();
 
-/* ════════════════════════════════════════════════════════════
-   ONBOARDING
-════════════════════════════════════════════════════════════ */
+/* ── USER ─────────────────── */
 function getUser() {
-  try { return JSON.parse(localStorage.getItem(USER_KEY)) || null; }
-  catch(e) { return null; }
+  try { return JSON.parse(localStorage.getItem(USER_KEY)) || null; } catch(e) { return null; }
 }
-
 function checkOnboarding() {
   const user = getUser();
   const screen = document.getElementById('onboardingScreen');
-  if (user) {
-    screen.style.display = 'none';
-    applyUserUI(user, false);
-  }
-  /* if no user, the screen is already visible */
+  if (user) { screen.style.display = 'none'; applyUserUI(user, false); }
 }
-
 function saveOnboarding() {
-  const nameEl  = document.getElementById('obName');
+  const nameEl = document.getElementById('obName');
   const emailEl = document.getElementById('obEmail');
-  const name    = nameEl.value.trim();
-  const email   = emailEl.value.trim();
-
-  /* Validation */
-  nameEl.classList.remove('ob-error');
+  const name = nameEl.value.trim();
   if (!name) { nameEl.classList.add('ob-error'); nameEl.focus(); return; }
-
-  const user = { name, email, joinedAt: Date.now() };
+  const user = { name, email: emailEl.value.trim(), joinedAt: Date.now() };
   localStorage.setItem(USER_KEY, JSON.stringify(user));
-
   const screen = document.getElementById('onboardingScreen');
   screen.classList.add('ob-hidden');
-  setTimeout(() => {
-    screen.style.display = 'none';
-    screen.classList.remove('ob-hidden');
-  }, 560);
-
+  setTimeout(() => { screen.style.display='none'; screen.classList.remove('ob-hidden'); }, 560);
   applyUserUI(user, true);
   showToast(`Welcome, ${name}! 🎉 Let's begin.`);
+  renderMascot();
 }
-
 function skipOnboarding() {
   const screen = document.getElementById('onboardingScreen');
   screen.classList.add('ob-hidden');
-  setTimeout(() => { screen.style.display = 'none'; screen.classList.remove('ob-hidden'); }, 560);
+  setTimeout(() => { screen.style.display='none'; screen.classList.remove('ob-hidden'); }, 560);
 }
-
 function applyUserUI(user, isNew) {
   if (!user || !user.name) return;
-  /* Nav badge */
   document.getElementById('navUserBadge').style.display = 'flex';
   document.getElementById('navUserName').textContent = user.name;
-  /* Hero greeting */
   const pool = isNew ? GREETINGS_FIRST : GREETINGS_RETURN;
-  const msg  = pool[Math.floor(Math.random() * pool.length)](user.name);
-  document.getElementById('heroTitle').innerHTML = msg;
-  /* Pre-fill email modal input if email known */
+  document.getElementById('heroTitle').innerHTML = pool[Math.floor(Math.random()*pool.length)](user.name);
   if (user.email) document.getElementById('modalEmailInput').value = user.email;
 }
 
-/* ════════════════════════════════════════════════════════════
-   FILTER TABS
-════════════════════════════════════════════════════════════ */
+/* ── MASCOT ───────────────── */
+function renderMascot() {
+  const user   = getUser();
+  const name   = user ? user.name : null;
+  const info   = getMascotMessage(appState, name);
+  const banner = document.getElementById('mascotBanner');
+  const emoji  = document.getElementById('mascotEmoji');
+  const msg    = document.getElementById('mascotMsg');
+  const mState = getMascotState(appState.streak, appState.lastDate);
+  banner.className = 'mascot-banner ' + mState;
+  emoji.textContent = info.emoji;
+  msg.innerHTML = info.msg;
+}
+
+/* ── SR DUE BANNER ────────── */
+function renderSRDueBanner() {
+  const due = getDueCards();
+  const banner = document.getElementById('srDueBanner');
+  const text   = document.getElementById('srDueText');
+  const tabDue = document.getElementById('tabDue');
+  if (due.length > 0) {
+    banner.style.display = 'flex';
+    text.textContent = `📅 ${due.length} expression${due.length>1?'s':''} due for review`;
+    tabDue.textContent = `📅 Due (${due.length})`;
+  } else {
+    banner.style.display = 'none';
+    tabDue.textContent = '📅 Due';
+  }
+}
+
+/* ── FILTER TABS ──────────── */
 function setupFilterTabs() {
   document.querySelectorAll('.filter-tab').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -421,16 +302,16 @@ function setupFilterTabs() {
     });
   });
 }
-
 function applyDeck() {
-  deck = activeType === 'All' ? [...DATA] : DATA.filter(d => d.type === activeType);
+  if (activeType === 'All')  deck = [...DATA];
+  else if (activeType === 'Due') deck = getDueCards().length ? getDueCards() : [...DATA];
+  else deck = DATA.filter(d => d.type === activeType);
+  if (!deck.length) deck = [...DATA];
   deckIdx = Math.min(deckIdx, deck.length - 1);
   if (deckIdx < 0) deckIdx = 0;
 }
 
-/* ════════════════════════════════════════════════════════════
-   RENDER CARD
-════════════════════════════════════════════════════════════ */
+/* ── RENDER CARD ──────────── */
 function renderCard() {
   if (!deck.length) return;
   revealed = false;
@@ -438,7 +319,7 @@ function renderCard() {
   const col = typeColor(d.type);
 
   document.getElementById('cardBar').style.background = col;
-  document.getElementById('cardNum').textContent = '#' + String(d.n).padStart(3, '0');
+  document.getElementById('cardNum').textContent = '#' + String(d.n).padStart(3,'0');
   document.getElementById('cardExpr').textContent = '"' + d.expr + '"';
 
   const badge = document.getElementById('cardType');
@@ -447,40 +328,237 @@ function renderCard() {
 
   document.getElementById('cardMeaning').textContent = d.meaning;
   document.getElementById('cardExample').textContent = d.example;
-
   document.getElementById('cardRevealed').classList.remove('show');
   document.getElementById('tapHint').style.display    = 'flex';
-  document.getElementById('cardActions').style.display = 'none';
+  document.getElementById('srRatingRow').style.display = 'none';
+  document.getElementById('usageForgePanel').style.display = 'none';
+  document.getElementById('usageForgePanel').innerHTML = '';
+
+  // SR status pill
+  const srEl = document.getElementById('cardSRStatus');
+  const srStatus = getSRStatus(d.n);
+  if (srStatus === 'new') {
+    srEl.innerHTML = '';
+  } else if (srStatus === 'due') {
+    srEl.innerHTML = `<span class="card-sr-status due">📅 Due for review</span>`;
+  } else {
+    srEl.innerHTML = `<span class="card-sr-status future">🗓 Review ${srStatus}</span>`;
+  }
 
   updateDeckProgress();
-
-  /* Animate in */
   const fc = document.getElementById('flashcard');
   fc.classList.remove('anim-popin');
   void fc.offsetWidth;
   fc.classList.add('anim-popin');
 }
 
-/* ════════════════════════════════════════════════════════════
-   REVEAL
-════════════════════════════════════════════════════════════ */
+/* ── REVEAL ───────────────── */
 function revealCard() {
   if (revealed) return;
   revealed = true;
   document.getElementById('cardRevealed').classList.add('show');
-  document.getElementById('tapHint').style.display    = 'none';
-  document.getElementById('cardActions').style.display = 'grid';
+  document.getElementById('tapHint').style.display = 'none';
+  document.getElementById('srRatingRow').style.display = 'grid';
+  // Show next review intervals as preview
+  const d = deck[deckIdx];
+  const data = getSRData();
+  const rec = data[d.n] || { interval:1 };
+  document.getElementById('intMissed').textContent  = '→ 1j';
+  document.getElementById('intHard').textContent    = '→ ' + Math.max(Math.round(rec.interval/2),1) + 'j';
+  document.getElementById('intCorrect').textContent = '→ ' + Math.min(Math.max(rec.interval||1, 1)*2, 14) + 'j';
+  document.getElementById('intEasy').textContent    = '→ ' + Math.min(Math.round((rec.interval||1)*2.5), 14) + 'j';
 }
 
-/* ════════════════════════════════════════════════════════════
-   NAVIGATION
-════════════════════════════════════════════════════════════ */
+/* ── SR RATING ────────────── */
+function rateSR(rating) {
+  const d = deck[deckIdx];
+  updateSR(d.n, rating);
+
+  if (rating === 'missed' || rating === 'hard') {
+    appState.difficult.add(d.n);
+    if (rating === 'missed') appState.learned.delete(d.n);
+  } else {
+    appState.learned.add(d.n);
+    appState.difficult.delete(d.n);
+    const xpGain = rating === 'easy' ? 15 : 10;
+    const isNew  = !appState.learned.has(d.n);
+    appState.xp += xpGain;
+    showXpPop('+' + xpGain + ' XP');
+    if (rating === 'correct' && appState.difficult.has(d.n)) {
+      incrementRecoveries();
+    }
+  }
+  saveState(appState);
+  renderNav();
+  renderStats();
+  checkBadges(appState, {});
+  renderSRDueBanner();
+
+  document.getElementById('srRatingRow').style.display = 'none';
+
+  // Trigger Usage Forge for new or missed cards
+  const data   = getSRData();
+  const rec    = data[d.n];
+  const isNew  = !rec || rec.reps <= 1;
+  if (isNew || rating === 'missed') {
+    showUsageForge(d, rating);
+  } else {
+    setTimeout(() => nextCard(), 320);
+  }
+}
+
+/* ── USAGE FORGE ──────────── */
+const UF_SCENARIOS = {
+  'A blessing in disguise': [
+    { text:'Your friend got fired but found a dream job a month later. You say:',
+      opts:['That was a blessing in disguise!', "You really burned the midnight oil!", "You're barking up the wrong tree!"],
+      correct:0 },
+    { text:'Your flight was cancelled but you met someone special at the airport. You might say:',
+      opts:["That's killing two birds with one stone.", "What a blessing in disguise!", "You should face the music."],
+      correct:1 }
+  ]
+};
+
+function showUsageForge(entry, rating) {
+  const panel = document.getElementById('usageForgePanel');
+  panel.style.display = 'block';
+
+  // 50% scenario, 50% free write (cycle based on n)
+  const useScenario = (entry.n % 2 === 0);
+
+  if (useScenario) {
+    renderUFScenario(entry, panel);
+  } else {
+    renderUFFreeWrite(entry, panel);
+  }
+}
+
+function renderUFScenario(entry, panel) {
+  // Build 3 scenario options: 1 contextually correct + 2 plausible wrong
+  const others  = shuffle(DATA.filter(d=>d.n!==entry.n)).slice(0,2);
+  const opts    = shuffle([
+    { text: entry.expr, correct: true },
+    { text: others[0].expr, correct: false },
+    { text: others[1].expr, correct: false },
+  ]);
+  const situation = entry.example.replace(new RegExp(entry.expr.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i'),'___');
+
+  panel.innerHTML = `
+    <div class="usage-forge-panel">
+      <div class="uf-header">
+        <div class="uf-title">🌍 Usage Forge</div>
+        <span class="uf-skip" onclick="skipUsageForge()">Skip →</span>
+      </div>
+      <div class="uf-body">
+        <div class="uf-prompt">Which expression best completes this sentence?</div>
+        <div class="uf-prompt" style="font-style:italic;color:var(--tx-3);margin-bottom:16px;">"${situation}"</div>
+        <div class="uf-options" id="ufOpts">
+          ${opts.map((o,i)=>`<button class="uf-opt" onclick="checkUFScenario(${i},${o.correct})" data-idx="${i}">${o.text}</button>`).join('')}
+        </div>
+        <div class="uf-feedback" id="ufFeedback"></div>
+      </div>
+    </div>`;
+}
+
+function checkUFScenario(idx, isCorrect) {
+  document.querySelectorAll('.uf-opt').forEach((b,i) => {
+    b.disabled = true;
+    if (b.dataset.idx == idx && isCorrect)  b.classList.add('uf-correct');
+    if (b.dataset.idx == idx && !isCorrect) b.classList.add('uf-wrong');
+  });
+  const fb = document.getElementById('ufFeedback');
+  fb.className = 'uf-feedback show' + (isCorrect ? '' : ' bad');
+  if (isCorrect) {
+    fb.innerHTML = `✓ Correct! <strong>"${deck[deckIdx].expr}"</strong> is used in exactly this kind of situation.`;
+    appState.xp += 5;
+    saveState(appState);
+    renderNav();
+    incrementUsageCount();
+    checkBadges(appState, {});
+    showXpPop('+5 XP');
+  } else {
+    fb.innerHTML = `The correct answer is <strong>"${deck[deckIdx].expr}"</strong>. ${deck[deckIdx].meaning}`;
+  }
+  setTimeout(() => nextCard(), 1800);
+}
+
+function renderUFFreeWrite(entry, panel) {
+  panel.innerHTML = `
+    <div class="usage-forge-panel">
+      <div class="uf-header">
+        <div class="uf-title">✍️ Usage Forge</div>
+        <span class="uf-skip" onclick="skipUsageForge()">Skip →</span>
+      </div>
+      <div class="uf-body">
+        <div class="uf-prompt">Write a sentence using <strong>"${entry.expr}"</strong>:</div>
+        <textarea class="uf-textarea" id="ufInput" placeholder='e.g. "Losing my old job was a blessing in disguise…"' rows="3"></textarea>
+        <button class="btn btn-primary btn-full" onclick="submitUFFreeWrite('${entry.expr.replace(/'/g,"\\'")}')">Check my sentence →</button>
+        <div class="uf-feedback" id="ufFeedback"></div>
+      </div>
+    </div>`;
+}
+
+function submitUFFreeWrite(expr) {
+  const input = document.getElementById('ufInput').value.trim();
+  if (!input || input.length < 6) {
+    showToast('Write at least a short sentence first!');
+    return;
+  }
+  const fb = document.getElementById('ufFeedback');
+  fb.className = 'uf-feedback show';
+  fb.innerHTML = `<div class="uf-loading">Analysing your sentence…</div>`;
+
+  const prompt = `The English idiom is: "${expr}".
+The user wrote: "${input}"
+Check if the idiom is used naturally and correctly. 
+Reply in 2 sentences maximum: first confirm if correct or suggest a natural fix, then give one brief tip about register or tone. Be encouraging. Don't use markdown.`;
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 120,
+      messages: [{ role:'user', content: prompt }]
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    const text = (data.content||[]).map(b=>b.text||'').join('');
+    const isGood = text.toLowerCase().includes('correct') || text.toLowerCase().includes('well') || text.toLowerCase().includes('natural') || text.toLowerCase().includes('great') || text.toLowerCase().includes('perfect');
+    fb.className = 'uf-feedback show' + (isGood ? '' : ' bad');
+    fb.innerHTML = text || 'Good effort! Keep practising with this expression.';
+    incrementUsageCount();
+    appState.xp += 5;
+    saveState(appState);
+    renderNav();
+    checkBadges(appState, {});
+    showXpPop('+5 XP');
+  })
+  .catch(() => {
+    fb.className = 'uf-feedback show';
+    fb.innerHTML = `Good effort! Keep using <strong>"${expr}"</strong> in context — that's how fluency builds.`;
+    incrementUsageCount();
+  })
+  .finally(() => {
+    setTimeout(() => nextCard(), 3000);
+  });
+}
+
+function skipUsageForge() {
+  document.getElementById('usageForgePanel').style.display = 'none';
+  nextCard();
+}
+
+/* ── NAVIGATION ───────────── */
 function nextCard() {
+  document.getElementById('usageForgePanel').style.display = 'none';
   deckIdx = (deckIdx + 1) % deck.length;
   if (deckIdx === 0) showToast('🎉 Deck complete! Starting from the top.');
   renderCard();
 }
 function prevCard() {
+  document.getElementById('usageForgePanel').style.display = 'none';
   deckIdx = (deckIdx - 1 + deck.length) % deck.length;
   renderCard();
 }
@@ -489,7 +567,6 @@ function randomCard() {
   let newIdx;
   do { newIdx = Math.floor(Math.random() * deck.length); } while (newIdx === deckIdx);
   deckIdx = newIdx;
-  /* Spin emoji for feedback */
   const btn = document.getElementById('btnRandom');
   btn.style.transform = 'scale(1.15) rotate(20deg)';
   setTimeout(() => { btn.style.transform = ''; }, 250);
@@ -497,299 +574,150 @@ function randomCard() {
   showToast('🎲 Random card!');
 }
 
-/* ════════════════════════════════════════════════════════════
-   MARK KNOWN / DIFFICULT
-════════════════════════════════════════════════════════════ */
-function markKnown() {
-  const d     = deck[deckIdx];
-  const isNew = !appState.learned.has(d.n);
-  appState.learned.add(d.n);
-  appState.difficult.delete(d.n);
-  if (isNew) {
-    appState.xp += 10;
-    showXpPop('+10 XP');
-    const user = getUser();
-    if (user && user.name) {
-      const pool = CORRECT_TOASTS;
-      showToast(pool[Math.floor(Math.random() * pool.length)](user.name));
-    } else {
-      showToast('✓ Marked as learned!');
-    }
-  } else {
-    showToast('✓ Already in your learned list!');
-  }
-  saveState(appState);
-  renderNav();
-  renderStats();
-  setTimeout(() => nextCard(), 420);
-}
-
-function markDifficult() {
-  const d = deck[deckIdx];
-  appState.difficult.add(d.n);
-  appState.learned.delete(d.n);
-  saveState(appState);
-  renderStats();
-  showToast('↩ Added to Review list');
-  setTimeout(() => nextCard(), 420);
-}
-
-/* ════════════════════════════════════════════════════════════
-   AUDIO ENGINE
-════════════════════════════════════════════════════════════ */
-function getVoice(lang) {
-  return window.speechSynthesis.getVoices().find(v => v.lang.startsWith(lang)) || null;
-}
-
-function speakCard(variant) {
-  if (!window.speechSynthesis) { showToast('⚠️ Speech not supported'); return; }
-  window.speechSynthesis.cancel();
-
-  /* Remove old active state */
-  if (activeSpeakBtn) { activeSpeakBtn.classList.remove('speaking'); activeSpeakBtn = null; }
-
-  const btnId = variant === 'US' ? 'btnUS' : 'btnUK';
-  const btn   = document.getElementById(btnId);
-  btn.classList.add('speaking');
-  activeSpeakBtn = btn;
-
-  const d          = deck[deckIdx];
-  const utterance  = new SpeechSynthesisUtterance(d.expr);
-  utterance.lang   = variant === 'US' ? 'en-US' : 'en-GB';
-  utterance.rate   = 0.82;
-
-  function doSpeak() {
-    const voice = getVoice(utterance.lang);
-    if (voice) utterance.voice = voice;
-    window.speechSynthesis.speak(utterance);
-  }
-
-  if (window.speechSynthesis.getVoices().length) { doSpeak(); }
-  else { window.speechSynthesis.addEventListener('voiceschanged', doSpeak, { once: true }); }
-
-  utterance.onend  = () => { btn.classList.remove('speaking'); if (activeSpeakBtn === btn) activeSpeakBtn = null; };
-  utterance.onerror= () => { btn.classList.remove('speaking'); if (activeSpeakBtn === btn) activeSpeakBtn = null; };
-
-  showToast(variant === 'US' ? '🇺🇸 American English' : '🇬🇧 British English');
-}
-
-function playFullCard() {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  if (activeSpeakBtn) { activeSpeakBtn.classList.remove('speaking'); activeSpeakBtn = null; }
-
-  const d  = deck[deckIdx];
-  const u1 = new SpeechSynthesisUtterance(d.expr);
-  u1.lang  = 'en-US'; u1.rate = 0.80;
-
-  const u2 = new SpeechSynthesisUtterance('The meaning is: ' + d.meaning);
-  u2.lang  = 'en-US'; u2.rate = 0.88;
-
-  const u3 = new SpeechSynthesisUtterance('For example: ' + d.example);
-  u3.lang  = 'en-GB'; u3.rate = 0.88;
-
-  function startAll() {
-    const voiceUS = getVoice('en-US');
-    const voiceUK = getVoice('en-GB');
-    if (voiceUS) { u1.voice = voiceUS; u2.voice = voiceUS; }
-    if (voiceUK)   u3.voice = voiceUK;
-    window.speechSynthesis.speak(u1);
-    window.speechSynthesis.speak(u2);
-    window.speechSynthesis.speak(u3);
-  }
-
-  if (window.speechSynthesis.getVoices().length) { startAll(); }
-  else { window.speechSynthesis.addEventListener('voiceschanged', startAll, { once: true }); }
-
-  showToast('🎧 Playing full card…');
-}
-
-/* ════════════════════════════════════════════════════════════
-   PNG DOWNLOAD — html2canvas
-════════════════════════════════════════════════════════════ */
-function downloadCardAsPng() {
-  const d   = deck[deckIdx];
-  const col = typeColor(d.type);
-
-  /* Populate hidden PNG card */
-  document.getElementById('pngBar').style.background   = col;
-  document.getElementById('pngExpr').textContent        = '"' + d.expr + '"';
-  document.getElementById('pngMeaning').textContent     = d.meaning;
-  document.getElementById('pngExample').textContent     = d.example;
-
-  const typeBadge = document.getElementById('pngTypeBadge');
-  typeBadge.textContent    = d.type;
-  typeBadge.style.color    = col;
-  typeBadge.style.borderColor = col;
-
-  const pngCard = document.getElementById('pngCard');
-  /* Briefly make it on-screen so html2canvas can render it */
-  const wrap = document.getElementById('pngCardWrap');
-  wrap.style.top  = '-9999px';
-  wrap.style.left = '0px';
-
-  showToast('📸 Generating image…');
-
-  html2canvas(pngCard, {
-    backgroundColor: '#111111',
-    scale: 2,          /* 2× for retina / crisp share images */
-    useCORS: true,
-    logging: false,
-  }).then(canvas => {
-    /* Reset position */
-    wrap.style.left = '-9999px';
-    /* Trigger download */
-    const link    = document.createElement('a');
-    const safeName = d.expr.replace(/[^a-z0-9]/gi, '_').toLowerCase().slice(0, 40);
-    link.download = 'idiomvault_' + safeName + '.png';
-    link.href     = canvas.toDataURL('image/png');
-    link.click();
-    showToast('✅ Image saved!');
-  }).catch(() => {
-    wrap.style.left = '-9999px';
-    showToast('⚠️ Could not generate image. Try again.');
-  });
-}
-
-/* ════════════════════════════════════════════════════════════
-   EMAIL MODAL
-════════════════════════════════════════════════════════════ */
-function openEmailModal() {
-  const d   = deck[deckIdx];
-  /* Populate preview */
-  document.getElementById('previewExpr').textContent    = '"' + d.expr + '"';
-  document.getElementById('previewMeaning').textContent = d.meaning;
-
-  /* Show form, hide success */
-  document.getElementById('emailModalForm').style.display    = 'block';
-  document.getElementById('emailModalSuccess').style.display = 'none';
-
-  /* Pre-fill from user profile */
-  const user = getUser();
-  if (user && user.email && !document.getElementById('modalEmailInput').value) {
-    document.getElementById('modalEmailInput').value = user.email;
-  }
-
-  document.getElementById('emailModal').classList.add('open');
-}
-
-function closeEmailModal() {
-  document.getElementById('emailModal').classList.remove('open');
-}
-
-function sendEmailReminder() {
-  const emailInput = document.getElementById('modalEmailInput');
-  const email      = emailInput.value.trim();
-
-  if (!email || !email.includes('@')) {
-    emailInput.focus();
-    emailInput.style.borderColor = 'var(--wrong)';
-    setTimeout(() => { emailInput.style.borderColor = ''; }, 2000);
-    return;
-  }
-
-  const d = deck[deckIdx];
-
-  /* Save email to user profile if not already set */
-  const user = getUser();
-  if (user && !user.email) {
-    user.email = email;
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
-    /* Also pre-fill onboarding if still visible */
-    const obEmail = document.getElementById('obEmail');
-    if (obEmail) obEmail.value = email;
-  }
-
-  /* Show success state */
-  document.getElementById('emailModalForm').style.display    = 'none';
-  document.getElementById('emailModalSuccess').style.display = 'block';
-  document.getElementById('successExpr').textContent  = '"' + d.expr + '"';
-  document.getElementById('successEmail').textContent = email;
-}
-
-/* Close modal on backdrop click */
-document.getElementById('emailModal').addEventListener('click', function(e) {
-  if (e.target === this) closeEmailModal();
-});
-
-/* ════════════════════════════════════════════════════════════
-   DECK PROGRESS
-════════════════════════════════════════════════════════════ */
+/* ── DECK PROGRESS ────────── */
 function updateDeckProgress() {
-  const total        = deck.length;
+  const total = deck.length;
   const learnedCount = deck.filter(d => appState.learned.has(d.n)).length;
-  const pct          = total ? Math.round((learnedCount / total) * 100) : 0;
-  document.getElementById('deckPos').textContent = `Card ${deckIdx + 1} of ${total}`;
+  const pct = total ? Math.round((learnedCount/total)*100) : 0;
+  document.getElementById('deckPos').textContent = `Card ${deckIdx+1} of ${total}`;
   document.getElementById('deckPct').textContent = `${pct}% complete`;
   document.getElementById('deckProgressFill').style.width = pct + '%';
 }
 
-/* ════════════════════════════════════════════════════════════
-   RENDER STATS
-════════════════════════════════════════════════════════════ */
+/* ── RENDER STATS ─────────── */
 function renderStats() {
   const learnedCount = appState.learned.size;
-  const pct          = Math.round((learnedCount / DATA.length) * 100);
-  document.getElementById('statTotal').textContent     = DATA.length;
-  document.getElementById('statLearned').textContent   = learnedCount;
-  document.getElementById('statDifficult').textContent = appState.difficult.size;
-  document.getElementById('statPct').textContent       = pct + '%';
+  const pct = Math.round((learnedCount/DATA.length)*100);
+  document.getElementById('statTotal').textContent   = DATA.length;
+  document.getElementById('statLearned').textContent = learnedCount;
+  document.getElementById('statDue').textContent     = getDueCards().length;
+  document.getElementById('statPct').textContent     = pct + '%';
   updateDeckProgress();
 }
 
-/* ════════════════════════════════════════════════════════════
-   RENDER NAV
-════════════════════════════════════════════════════════════ */
 function renderNav() {
   document.getElementById('navStreak').textContent = '🔥 ' + appState.streak;
   document.getElementById('navXP').textContent     = '⭐ ' + appState.xp + ' XP';
 }
 
-/* ════════════════════════════════════════════════════════════
-   TOAST & XP POP
-════════════════════════════════════════════════════════════ */
+/* ── AUDIO ────────────────── */
+function getVoice(lang) {
+  return window.speechSynthesis.getVoices().find(v => v.lang.startsWith(lang)) || null;
+}
+function speakCard(variant) {
+  if (!window.speechSynthesis) { showToast('⚠️ Speech not supported'); return; }
+  window.speechSynthesis.cancel();
+  if (activeSpeakBtn) { activeSpeakBtn.classList.remove('speaking'); activeSpeakBtn = null; }
+  const btnId = variant === 'US' ? 'btnUS' : 'btnUK';
+  const btn = document.getElementById(btnId);
+  btn.classList.add('speaking');
+  activeSpeakBtn = btn;
+  const d = deck[deckIdx];
+  const utterance = new SpeechSynthesisUtterance(d.expr);
+  utterance.lang  = variant === 'US' ? 'en-US' : 'en-GB';
+  utterance.rate  = 0.82;
+  function doSpeak() {
+    const voice = getVoice(utterance.lang);
+    if (voice) utterance.voice = voice;
+    window.speechSynthesis.speak(utterance);
+  }
+  if (window.speechSynthesis.getVoices().length) doSpeak();
+  else window.speechSynthesis.addEventListener('voiceschanged', doSpeak, { once:true });
+  utterance.onend = utterance.onerror = () => { btn.classList.remove('speaking'); if (activeSpeakBtn===btn) activeSpeakBtn=null; };
+  showToast(variant==='US' ? '🇺🇸 American English' : '🇬🇧 British English');
+}
+function playFullCard() {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  if (activeSpeakBtn) { activeSpeakBtn.classList.remove('speaking'); activeSpeakBtn=null; }
+  const d  = deck[deckIdx];
+  const u1 = new SpeechSynthesisUtterance(d.expr);        u1.lang='en-US'; u1.rate=0.80;
+  const u2 = new SpeechSynthesisUtterance('The meaning is: '+d.meaning); u2.lang='en-US'; u2.rate=0.88;
+  const u3 = new SpeechSynthesisUtterance('For example: '+d.example);  u3.lang='en-GB'; u3.rate=0.88;
+  function startAll() {
+    const vUS = getVoice('en-US'); const vUK = getVoice('en-GB');
+    if (vUS) { u1.voice=vUS; u2.voice=vUS; } if (vUK) u3.voice=vUK;
+    window.speechSynthesis.speak(u1); window.speechSynthesis.speak(u2); window.speechSynthesis.speak(u3);
+  }
+  if (window.speechSynthesis.getVoices().length) startAll();
+  else window.speechSynthesis.addEventListener('voiceschanged', startAll, { once:true });
+  showToast('🎧 Playing full card…');
+}
+
+/* ── PNG DOWNLOAD ─────────── */
+function downloadCardAsPng() {
+  const d = deck[deckIdx];
+  const col = typeColor(d.type);
+  document.getElementById('pngBar').style.background  = col;
+  document.getElementById('pngExpr').textContent       = '"' + d.expr + '"';
+  document.getElementById('pngMeaning').textContent    = d.meaning;
+  document.getElementById('pngExample').textContent    = d.example;
+  const tb = document.getElementById('pngTypeBadge');
+  tb.textContent = d.type; tb.style.color = col; tb.style.borderColor = col;
+  const wrap = document.getElementById('pngCardWrap');
+  wrap.style.top='−9999px'; wrap.style.left='0px';
+  showToast('📸 Generating image…');
+  html2canvas(document.getElementById('pngCard'), { backgroundColor:'#111111', scale:2, useCORS:true, logging:false })
+    .then(canvas => {
+      wrap.style.left='-9999px';
+      const link = document.createElement('a');
+      link.download = 'idiomvault_' + d.expr.replace(/[^a-z0-9]/gi,'_').toLowerCase().slice(0,40) + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('✅ Image saved!');
+    })
+    .catch(() => { wrap.style.left='-9999px'; showToast('⚠️ Could not generate image.'); });
+}
+
+/* ── EMAIL MODAL ──────────── */
+function openEmailModal() {
+  const d = deck[deckIdx];
+  document.getElementById('previewExpr').textContent    = '"' + d.expr + '"';
+  document.getElementById('previewMeaning').textContent = d.meaning;
+  document.getElementById('emailModalForm').style.display    = 'block';
+  document.getElementById('emailModalSuccess').style.display = 'none';
+  const user = getUser();
+  if (user && user.email && !document.getElementById('modalEmailInput').value)
+    document.getElementById('modalEmailInput').value = user.email;
+  document.getElementById('emailModal').classList.add('open');
+}
+function closeEmailModal() { document.getElementById('emailModal').classList.remove('open'); }
+function sendEmailReminder() {
+  const ei = document.getElementById('modalEmailInput');
+  const email = ei.value.trim();
+  if (!email || !email.includes('@')) { ei.focus(); ei.style.borderColor='var(--wrong)'; setTimeout(()=>{ei.style.borderColor='';},2000); return; }
+  const d = deck[deckIdx];
+  document.getElementById('emailModalForm').style.display    = 'none';
+  document.getElementById('emailModalSuccess').style.display = 'block';
+  document.getElementById('successExpr').textContent  = '"' + d.expr + '"';
+  document.getElementById('successEmail').textContent = email;
+}
+document.getElementById('emailModal').addEventListener('click', function(e) { if (e.target===this) closeEmailModal(); });
+
+/* ── TOAST & XP POP ───────── */
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
-
 function showXpPop(msg) {
   const el = document.getElementById('xpPop');
-  el.textContent = msg;
-  el.classList.remove('fly');
-  void el.offsetWidth;
-  el.classList.add('fly');
+  el.textContent = msg; el.classList.remove('fly');
+  void el.offsetWidth; el.classList.add('fly');
 }
 
-/* ════════════════════════════════════════════════════════════
-   KEYBOARD SHORTCUTS
-   Space / → : flip or advance
-   ←         : previous
-   U         : US audio
-   B         : UK audio
-   K         : mark known (when revealed)
-   R         : random card
-   X         : mark for review (when revealed)
-════════════════════════════════════════════════════════════ */
+/* ── KEYBOARD ─────────────── */
 document.addEventListener('keydown', e => {
   if (document.getElementById('onboardingScreen').style.display !== 'none') return;
   if (document.getElementById('emailModal').classList.contains('open')) return;
-
   const key = e.key;
-  if (key === 'ArrowRight' || key === ' ') {
-    e.preventDefault();
-    revealed ? nextCard() : revealCard();
-  }
-  if (key === 'ArrowLeft')              { e.preventDefault(); prevCard(); }
-  if (key.toLowerCase() === 'u')        speakCard('US');
-  if (key.toLowerCase() === 'b')        speakCard('UK');
-  if (key.toLowerCase() === 'r')        randomCard();
-  if (key.toLowerCase() === 'k' && revealed) markKnown();
-  if (key.toLowerCase() === 'x' && revealed) markDifficult();
+  if (key==='ArrowRight'||key===' ') { e.preventDefault(); revealed ? nextCard() : revealCard(); }
+  if (key==='ArrowLeft')  { e.preventDefault(); prevCard(); }
+  if (key.toLowerCase()==='u') speakCard('US');
+  if (key.toLowerCase()==='b') speakCard('UK');
+  if (key.toLowerCase()==='r') randomCard();
 });
 </script>
 </body>

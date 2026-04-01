@@ -8,38 +8,39 @@
 </head>
 <body>
 
-<!-- ═══ NAVIGATION ═══ -->
 <nav class="nav">
   <div class="nav-logo">IdiomVault <span>by BODY</span></div>
   <div class="nav-links">
-    <a href="index.html"    class="nav-link"><span class="nl-icon">🃏</span><span class="nl-text">Cards</span></a>
-    <a href="quiz.html"     class="nav-link"><span class="nl-icon">⚡</span><span class="nl-text">Quiz</span></a>
-    <a href="review.html"   class="nav-link"><span class="nl-icon">🔁</span><span class="nl-text">Review</span></a>
-    <a href="progress.html" class="nav-link active"><span class="nl-icon">📊</span><span class="nl-text">Progress</span></a>
+    <a href="index.html"     class="nav-link"><span class="nl-icon">🃏</span><span class="nl-text">Cards</span></a>
+    <a href="quiz.html"      class="nav-link"><span class="nl-icon">⚡</span><span class="nl-text">Quiz</span></a>
+    <a href="review.html"    class="nav-link"><span class="nl-icon">🔁</span><span class="nl-text">Review</span></a>
+    <a href="challenge.html" class="nav-link"><span class="nl-icon">🧠</span><span class="nl-text">Challenge</span></a>
+    <a href="progress.html"  class="nav-link active"><span class="nl-icon">📊</span><span class="nl-text">Progress</span></a>
   </div>
   <div class="nav-xp">
-    <div class="nav-user-badge" id="navUserBadge" style="display:none;">
-      👤 <span id="navUserName"></span>
-    </div>
+    <div class="nav-user-badge" id="navUserBadge" style="display:none;">👤 <span id="navUserName"></span></div>
     <div class="streak-pill" id="navStreak">🔥 0</div>
-    <div class="xp-pill"     id="navXP">⭐ 0 XP</div>
+    <div class="xp-pill" id="navXP">⭐ 0 XP</div>
   </div>
 </nav>
 
-<!-- ═══ TOAST ═══ -->
 <div class="toast" id="toast"></div>
 
-<!-- ═══ PAGE ═══ -->
 <div class="page">
   <div class="container">
 
-    <!-- Hero -->
     <div class="page-hero">
       <h1 class="page-hero-title" id="progressHeroTitle">Your <em>Progress</em></h1>
       <p class="page-hero-sub">Track your learning journey</p>
     </div>
 
-    <!-- Streak block -->
+    <!-- Mascot -->
+    <div class="mascot-banner" id="mascotBanner" style="margin-bottom:20px;">
+      <div class="mascot-emoji" id="mascotEmoji">🦊</div>
+      <div class="mascot-msg" id="mascotMsg"></div>
+    </div>
+
+    <!-- Streak -->
     <div class="streak-block anim-fadeup" style="animation-delay:0ms">
       <div class="streak-fire">🔥</div>
       <div>
@@ -57,7 +58,6 @@
       <div class="level-emoji" id="levelEmoji">🌱</div>
       <div class="level-name"  id="levelName">Beginner</div>
       <div class="level-num"   id="levelNum">Level 1</div>
-
       <div class="level-xp-row">
         <span id="xpCurrent">0 XP</span>
         <span id="xpNext">Next: 100 XP</span>
@@ -88,18 +88,44 @@
       <div style="font-size:12px;color:var(--tx-3);margin-top:10px;" id="reviewStat"></div>
     </div>
 
-    <!-- Breakdown by type -->
-    <div style="margin-bottom:14px;">
+    <!-- SR Stats -->
+    <div class="progress-section anim-fadeup" style="animation-delay:130ms">
+      <div class="ps-header">
+        <div class="ps-title">🧠 Spaced Repetition</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--warn);" id="srDueCount">0</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx-3);margin-top:4px;">Due today</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--accent);" id="srScheduledCount">0</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx-3);margin-top:4px;">Scheduled</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--correct);" id="srRecoveries">0</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx-3);margin-top:4px;">Recovered</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Type breakdown -->
+    <div style="margin-bottom:20px;" class="anim-fadeup" style="animation-delay:160ms">
       <div style="font-size:13px;font-weight:700;color:var(--tx-2);margin-bottom:12px;letter-spacing:0.06em;text-transform:uppercase;">By Type</div>
       <div class="type-breakdown" id="typeBreakdown"></div>
     </div>
 
-    <!-- Reset -->
-    <div style="text-align:center; padding: 8px 0 48px; display:flex; flex-direction:column; gap:10px; align-items:center;">
+    <!-- Badges -->
+    <div style="margin-bottom:24px;" class="anim-fadeup">
+      <div style="font-size:13px;font-weight:700;color:var(--tx-2);margin-bottom:4px;letter-spacing:0.06em;text-transform:uppercase;">Trophées</div>
+      <div style="font-size:12px;color:var(--tx-3);margin-bottom:14px;" id="badgeSubtitle">0 / 17 unlocked</div>
+      <div class="badges-grid" id="badgesGrid"></div>
+    </div>
+
+    <!-- Buttons -->
+    <div style="text-align:center;padding:8px 0 48px;display:flex;flex-direction:column;gap:10px;align-items:center;">
       <button class="btn btn-ghost" onclick="resetProgress()">🗑️ Reset All Progress</button>
-      <button class="btn btn-ghost" onclick="changeProfile()" style="font-size:12px;color:var(--tx-3);">
-        👤 Change Profile
-      </button>
+      <button class="btn btn-ghost" onclick="changeProfile()" style="font-size:12px;color:var(--tx-3);">👤 Change Profile</button>
     </div>
 
   </div>
@@ -108,73 +134,83 @@
 <script src="data.js"></script>
 <script>
 const USER_KEY = 'iv3_user';
-
-/* ─── INIT ─── */
 let state = getState();
 loadUserUI();
 renderNav();
 renderProgress();
+renderBadges();
 
 function getUser() {
-  try { return JSON.parse(localStorage.getItem(USER_KEY)) || null; }
-  catch(e) { return null; }
+  try { return JSON.parse(localStorage.getItem(USER_KEY)) || null; } catch(e) { return null; }
 }
-
 function loadUserUI() {
   const user = getUser();
   if (!user || !user.name) return;
   document.getElementById('navUserBadge').style.display = 'flex';
   document.getElementById('navUserName').textContent = user.name;
-  document.getElementById('progressHeroTitle').innerHTML =
-    `${user.name}'s <em>Progress</em>`;
+  document.getElementById('progressHeroTitle').innerHTML = `${user.name}'s <em>Progress</em>`;
+
+  // Mascot
+  const info = getMascotMessage(state, user.name);
+  const mState = getMascotState(state.streak, state.lastDate);
+  const banner = document.getElementById('mascotBanner');
+  banner.className = 'mascot-banner ' + mState;
+  document.getElementById('mascotEmoji').textContent = info.emoji;
+  document.getElementById('mascotMsg').textContent   = info.msg;
 }
 
-/* ─── RENDER PROGRESS ─── */
 function renderProgress() {
-  const learned  = state.learned.size;
-  const total    = DATA.length;
-  const pct      = total ? Math.round((learned / total) * 100) : 0;
-  const xp       = state.xp;
-  const level    = getLevel(xp);
-  const nextLev  = getNextLevel(xp);
-  const xpPct    = xpProgressPct(xp);
+  const learned = state.learned.size;
+  const total   = DATA.length;
+  const pct     = total ? Math.round((learned/total)*100) : 0;
+  const xp      = state.xp;
+  const level   = getLevel(xp);
+  const nextLev = getNextLevel(xp);
+  const xpPct   = xpProgressPct(xp);
 
-  /* Streak */
+  // Streak
   document.getElementById('streakVal').textContent   = state.streak;
-  document.getElementById('streakLabel').textContent = state.streak === 1 ? 'day streak' : 'day streak';
   document.getElementById('lastDate').textContent    = state.lastDate || 'Never';
 
-  /* Level */
+  // Level
   document.getElementById('levelEmoji').textContent = level.emoji;
   document.getElementById('levelName').textContent  = level.label;
   document.getElementById('levelNum').textContent   = 'Level ' + level.level;
   document.getElementById('xpCurrent').textContent  = xp + ' XP';
   document.getElementById('xpNext').textContent     = nextLev ? 'Next: ' + nextLev.minXP + ' XP' : 'MAX LEVEL';
   document.getElementById('xpBar').style.width      = xpPct + '%';
-  document.getElementById('xpToGo').textContent     = nextLev
-    ? (nextLev.minXP - xp) + ' XP to Level ' + nextLev.level
-    : '🌟 Maximum level reached!';
+  document.getElementById('xpToGo').textContent     = nextLev ? (nextLev.minXP - xp) + ' XP to Level ' + nextLev.level : '🌟 Maximum level reached!';
 
-  /* Overall */
+  // Overall
   document.getElementById('overallPct').textContent    = pct + '%';
   document.getElementById('overallBar').style.width    = pct + '%';
   document.getElementById('learnedOf').textContent     = learned + ' learned';
   document.getElementById('learnedTotal').textContent  = 'of ' + total;
   document.getElementById('reviewStat').textContent    = state.difficult.size
-    ? `${state.difficult.size} expression${state.difficult.size > 1 ? 's' : ''} in your review list`
+    ? `${state.difficult.size} expression${state.difficult.size>1?'s':''} in your review list`
     : 'No expressions in review list — great work!';
 
-  /* Type breakdown */
+  // SR stats
+  const today   = new Date().toISOString().slice(0,10);
+  const srData  = getSRData();
+  const srDue   = DATA.filter(d => { const r=srData[d.n]; return r && r.nextReview<=today; }).length;
+  const srSched = DATA.filter(d => { const r=srData[d.n]; return r && r.nextReview>today; }).length;
+  const recovs  = parseInt(localStorage.getItem(KEYS.recoveries)||'0',10);
+  document.getElementById('srDueCount').textContent       = srDue;
+  document.getElementById('srScheduledCount').textContent = srSched;
+  document.getElementById('srRecoveries').textContent     = recovs;
+
+  // Type breakdown
   const types = [
-    { type: 'idiom',        label: 'Idioms',        color: 'var(--c-idiom)' },
-    { type: 'proverb',      label: 'Proverbs',      color: 'var(--c-proverb)' },
-    { type: 'slang',        label: 'Slang',         color: 'var(--c-slang)' },
-    { type: 'phrasal verb', label: 'Phrasal Verbs', color: 'var(--c-phrasal)' },
+    { type:'idiom',        label:'Idioms',        color:'var(--c-idiom)' },
+    { type:'proverb',      label:'Proverbs',      color:'var(--c-proverb)' },
+    { type:'slang',        label:'Slang',         color:'var(--c-slang)' },
+    { type:'phrasal verb', label:'Phrasal Verbs', color:'var(--c-phrasal)' },
   ];
   document.getElementById('typeBreakdown').innerHTML = types.map(t => {
-    const tAll     = DATA.filter(d => d.type === t.type);
-    const tLearned = tAll.filter(d => state.learned.has(d.n)).length;
-    const tPct     = tAll.length ? Math.round((tLearned / tAll.length) * 100) : 0;
+    const tAll     = DATA.filter(d=>d.type===t.type);
+    const tLearned = tAll.filter(d=>state.learned.has(d.n)).length;
+    const tPct     = tAll.length ? Math.round((tLearned/tAll.length)*100) : 0;
     return `
     <div class="tb-item anim-fadeup">
       <div class="tb-label" style="color:${t.color}">${t.label}</div>
@@ -189,40 +225,54 @@ function renderProgress() {
   }).join('');
 }
 
-/* ─── RENDER NAV ─── */
+function renderBadges() {
+  const earned = getEarnedBadges();
+  const grid   = document.getElementById('badgesGrid');
+  document.getElementById('badgeSubtitle').textContent = `${earned.length} / ${BADGE_DEFS.length} unlocked`;
+  grid.innerHTML = BADGE_DEFS.map(b => {
+    const isEarned = earned.includes(b.id);
+    return `
+    <div class="badge-item ${isEarned?'earned':'locked'}" title="${b.desc}">
+      ${isEarned ? '<div class="badge-earned-dot"></div>' : ''}
+      <span class="badge-emoji">${b.emoji}</span>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-xp">${isEarned ? '✓ Earned' : '+'+b.xp+' XP'}</div>
+    </div>`;
+  }).join('');
+}
+
 function renderNav() {
   document.getElementById('navStreak').textContent = '🔥 ' + state.streak;
   document.getElementById('navXP').textContent     = '⭐ ' + state.xp + ' XP';
 }
 
-/* ─── RESET PROGRESS ─── */
 function resetProgress() {
-  if (!confirm('This will erase all your XP, streak, learned and review data. Are you sure?')) return;
+  if (!confirm('This will erase all your XP, streak, SR data, badges, and progress. Are you sure?')) return;
   state.learned.clear();
   state.difficult.clear();
-  state.xp       = 0;
-  state.streak   = 0;
-  state.lastDate = '';
+  state.xp=0; state.streak=0; state.lastDate='';
   saveState(state);
+  localStorage.removeItem(KEYS.sr);
+  localStorage.removeItem(KEYS.badges);
+  localStorage.removeItem(KEYS.usageCount);
+  localStorage.removeItem(KEYS.recoveries);
   renderNav();
   renderProgress();
+  renderBadges();
   showToast('Progress reset');
 }
 
-/* ─── CHANGE PROFILE ─── */
 function changeProfile() {
   if (!confirm('This will clear your saved name and email. You will see the welcome screen again on next visit. Continue?')) return;
   localStorage.removeItem(USER_KEY);
   showToast('Profile cleared — see you next time!');
-  setTimeout(() => window.location.href = 'index.html', 1500);
+  setTimeout(() => window.location.href='index.html', 1500);
 }
 
-/* ─── TOAST ─── */
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }

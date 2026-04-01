@@ -8,73 +8,62 @@
 </head>
 <body>
 
-<!-- ═══ NAVIGATION ═══ -->
 <nav class="nav">
   <div class="nav-logo">IdiomVault <span>by BODY</span></div>
   <div class="nav-links">
-    <a href="index.html"    class="nav-link"><span class="nl-icon">🃏</span><span class="nl-text">Cards</span></a>
-    <a href="quiz.html"     class="nav-link"><span class="nl-icon">⚡</span><span class="nl-text">Quiz</span></a>
-    <a href="review.html"   class="nav-link active"><span class="nl-icon">🔁</span><span class="nl-text">Review</span></a>
-    <a href="progress.html" class="nav-link"><span class="nl-icon">📊</span><span class="nl-text">Progress</span></a>
+    <a href="index.html"     class="nav-link"><span class="nl-icon">🃏</span><span class="nl-text">Cards</span></a>
+    <a href="quiz.html"      class="nav-link"><span class="nl-icon">⚡</span><span class="nl-text">Quiz</span></a>
+    <a href="review.html"    class="nav-link active"><span class="nl-icon">🔁</span><span class="nl-text">Review</span></a>
+    <a href="challenge.html" class="nav-link"><span class="nl-icon">🧠</span><span class="nl-text">Challenge</span></a>
+    <a href="progress.html"  class="nav-link"><span class="nl-icon">📊</span><span class="nl-text">Progress</span></a>
   </div>
   <div class="nav-xp">
-    <div class="nav-user-badge" id="navUserBadge" style="display:none;">
-      👤 <span id="navUserName"></span>
-    </div>
+    <div class="nav-user-badge" id="navUserBadge" style="display:none;">👤 <span id="navUserName"></span></div>
     <div class="streak-pill" id="navStreak">🔥 0</div>
-    <div class="xp-pill"     id="navXP">⭐ 0 XP</div>
+    <div class="xp-pill" id="navXP">⭐ 0 XP</div>
   </div>
 </nav>
 
-<!-- ═══ TOAST ═══ -->
 <div class="toast" id="toast"></div>
 
-<!-- ═══ PAGE ═══ -->
 <div class="page">
   <div class="container">
 
-    <!-- Hero -->
     <div class="page-hero">
       <h1 class="page-hero-title"><em>Review</em> Mode</h1>
-      <p class="page-hero-sub" id="reviewSub">Expressions you marked for review</p>
+      <p class="page-hero-sub" id="reviewSub">Your spaced repetition queue</p>
     </div>
 
-    <!-- Stats -->
-    <div class="stat-strip" style="margin-bottom:28px;">
-      <div class="stat-item">
-        <span class="stat-val" id="reviewCount">0</span>
-        <span class="stat-lbl">To Review</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val" id="learnedCount">0</span>
-        <span class="stat-lbl">Learned</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val" id="totalCount">198</span>
-        <span class="stat-lbl">Total</span>
-      </div>
+    <!-- Tab: Due Today / All Difficult -->
+    <div class="filter-tabs" style="margin-bottom:20px;" id="reviewTabs">
+      <button class="filter-tab on" data-view="due" onclick="switchView('due')">📅 Due Today <span id="dueCount" style="background:rgba(240,168,64,0.2);color:var(--warn);border-radius:999px;padding:1px 7px;font-size:10px;margin-left:4px;">0</span></button>
+      <button class="filter-tab" data-view="all" onclick="switchView('all')">📋 All Difficult</button>
+      <button class="filter-tab" data-view="upcoming" onclick="switchView('upcoming')">🗓 Upcoming</button>
     </div>
 
-    <!-- Review list -->
+    <div class="stat-strip" style="margin-bottom:24px;">
+      <div class="stat-item"><span class="stat-val" id="reviewCount">0</span><span class="stat-lbl">Due Today</span></div>
+      <div class="stat-item"><span class="stat-val" id="learnedCount">0</span><span class="stat-lbl">Learned</span></div>
+      <div class="stat-item"><span class="stat-val" id="difficultCount">0</span><span class="stat-lbl">Difficult</span></div>
+      <div class="stat-item"><span class="stat-val" id="totalCount">198</span><span class="stat-lbl">Total</span></div>
+    </div>
+
     <div id="reviewList"></div>
 
-    <!-- Empty state -->
     <div class="review-empty" id="reviewEmpty" style="display:none;">
       <div class="review-empty-icon">🎯</div>
-      <div class="review-empty-text">Nothing to review!</div>
-      <div class="review-empty-sub">
-        When you tap "Review Again" on a flashcard or get a quiz answer wrong,<br>
-        expressions appear here.
+      <div class="review-empty-text" id="reviewEmptyTitle">Nothing to review!</div>
+      <div class="review-empty-sub" id="reviewEmptySub">
+        Your queue is clear. Come back tomorrow for your scheduled reviews.
       </div>
-      <div style="margin-top:28px; display:flex; flex-direction:column; gap:10px; align-items:center;">
+      <div style="margin-top:28px;display:flex;flex-direction:column;gap:10px;align-items:center;">
         <a href="index.html" class="btn btn-primary btn-lg">🃏 Start Flashcards</a>
         <a href="quiz.html"  class="btn btn-ghost btn-lg">⚡ Take a Quiz</a>
       </div>
     </div>
 
-    <!-- Clear all -->
-    <div id="clearRow" style="display:none; text-align:center; padding-bottom:48px;">
-      <button class="btn btn-ghost" onclick="clearAll()">🗑️ Clear All Reviewed</button>
+    <div id="clearRow" style="display:none;text-align:center;padding-bottom:48px;">
+      <button class="btn btn-ghost" onclick="clearAll()">🗑️ Clear All from List</button>
     </div>
 
   </div>
@@ -83,51 +72,95 @@
 <script src="data.js"></script>
 <script>
 const USER_KEY = 'iv3_user';
-
-/* ─── INIT ─── */
 let state = getState();
+let currentView = 'due';
+
 loadUserUI();
 renderNav();
 renderReview();
 
 function getUser() {
-  try { return JSON.parse(localStorage.getItem(USER_KEY)) || null; }
-  catch(e) { return null; }
+  try { return JSON.parse(localStorage.getItem(USER_KEY)) || null; } catch(e) { return null; }
 }
 function loadUserUI() {
   const user = getUser();
   if (!user || !user.name) return;
   document.getElementById('navUserBadge').style.display = 'flex';
   document.getElementById('navUserName').textContent = user.name;
-  document.getElementById('reviewSub').textContent =
-    `${user.name}'s expressions marked for review`;
+  document.getElementById('reviewSub').textContent = `${user.name}'s spaced repetition queue`;
 }
 
-/* ─── RENDER REVIEW LIST ─── */
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('on'));
+  document.querySelector(`[data-view="${view}"]`).classList.add('on');
+  renderReview();
+}
+
 function renderReview() {
-  const list     = document.getElementById('reviewList');
-  const empty    = document.getElementById('reviewEmpty');
-  const clearRow = document.getElementById('clearRow');
+  const list      = document.getElementById('reviewList');
+  const empty     = document.getElementById('reviewEmpty');
+  const clearRow  = document.getElementById('clearRow');
+  const today     = new Date().toISOString().slice(0,10);
+  const srData    = getSRData();
 
-  const items = DATA.filter(d => state.difficult.has(d.n));
+  const dueItems  = DATA.filter(d => {
+    const rec = srData[d.n];
+    return rec && rec.nextReview <= today;
+  });
+  const allDifficult = DATA.filter(d => state.difficult.has(d.n));
 
-  document.getElementById('reviewCount').textContent  = items.length;
-  document.getElementById('learnedCount').textContent = state.learned.size;
-  document.getElementById('totalCount').textContent   = DATA.length;
+  // Upcoming: scheduled but not yet due (next 7 days)
+  const next7 = new Date();
+  next7.setDate(next7.getDate() + 7);
+  const upcomingItems = DATA.filter(d => {
+    const rec = srData[d.n];
+    if (!rec) return false;
+    return rec.nextReview > today && rec.nextReview <= next7.toISOString().slice(0,10);
+  }).sort((a,b) => srData[a.n].nextReview.localeCompare(srData[b.n].nextReview));
+
+  document.getElementById('reviewCount').textContent    = dueItems.length;
+  document.getElementById('learnedCount').textContent   = state.learned.size;
+  document.getElementById('difficultCount').textContent = allDifficult.length;
+  document.getElementById('totalCount').textContent     = DATA.length;
+  document.getElementById('dueCount').textContent       = dueItems.length;
+
+  let items = [];
+  if (currentView === 'due')      items = dueItems;
+  else if (currentView === 'all') items = allDifficult;
+  else                            items = upcomingItems;
 
   if (!items.length) {
     list.innerHTML = '';
     empty.style.display    = 'block';
     clearRow.style.display = 'none';
+    const titles = {
+      due:      ['All caught up! 🎉', 'No expressions are due for review today. Check back tomorrow.'],
+      all:      ['Nothing to review!', 'When you rate cards as "Raté" or "Difficile", they appear here.'],
+      upcoming: ['Nothing scheduled in the next 7 days.', 'Keep learning new expressions to build your review queue.'],
+    };
+    const [title, sub] = titles[currentView];
+    document.getElementById('reviewEmptyTitle').textContent = title;
+    document.getElementById('reviewEmptySub').textContent   = sub;
     return;
   }
 
   empty.style.display    = 'none';
-  clearRow.style.display = 'block';
+  clearRow.style.display = currentView === 'all' ? 'block' : 'none';
 
   list.innerHTML = items.map((d, i) => {
-    const col       = typeColor(d.type);
+    const col = typeColor(d.type);
     const typeClass = 'type-' + (d.type === 'phrasal verb' ? 'phrasal' : d.type);
+    const rec = srData[d.n];
+    let srBadge = '';
+    if (rec) {
+      if (rec.nextReview <= today) {
+        srBadge = `<div class="rc-sr-badge">📅 Due today — interval: ${rec.interval}j</div>`;
+      } else {
+        const diff = Math.ceil((new Date(rec.nextReview) - new Date(today)) / 86400000);
+        srBadge = `<div class="rc-sr-badge" style="color:var(--tx-3);border-color:var(--border-md);">🗓 Review in ${diff} day${diff>1?'s':''}</div>`;
+      }
+    }
     return `
     <div class="review-card anim-fadeup" id="rcard-${d.n}" style="animation-delay:${Math.min(i,12)*30}ms">
       <div class="review-card-bar" style="background:${col}"></div>
@@ -139,6 +172,7 @@ function renderReview() {
           </div>
           <button class="rc-remove" title="Remove from review" onclick="removeItem(${d.n})">✕</button>
         </div>
+        ${srBadge}
         <div class="rc-meaning">${d.meaning}</div>
         <div class="rc-example">${d.example}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
@@ -150,30 +184,32 @@ function renderReview() {
   }).join('');
 }
 
-/* ─── MARK LEARNED ─── */
 function markLearned(n) {
+  const wasdifficult = state.difficult.has(n);
   state.learned.add(n);
   state.difficult.delete(n);
   state.xp += 10;
+  updateSR(n, 'correct');
   saveState(state);
+  if (wasdifficult) {
+    incrementRecoveries();
+    checkBadges(state, {});
+  }
   renderNav();
   showToast('✓ Marked as learned! +10 XP');
   animateRemove(n);
 }
 
-/* ─── KEEP FOR LATER ─── */
 function keepForLater(n) {
   showToast('Kept in review list');
 }
 
-/* ─── REMOVE FROM REVIEW ─── */
 function removeItem(n) {
   state.difficult.delete(n);
   saveState(state);
   animateRemove(n);
 }
 
-/* ─── ANIMATE REMOVE ─── */
 function animateRemove(n) {
   const el = document.getElementById('rcard-' + n);
   if (el) {
@@ -184,7 +220,6 @@ function animateRemove(n) {
   }
 }
 
-/* ─── CLEAR ALL ─── */
 function clearAll() {
   if (!confirm('Remove all expressions from review list?')) return;
   state.difficult.clear();
@@ -193,18 +228,15 @@ function clearAll() {
   showToast('Review list cleared');
 }
 
-/* ─── RENDER NAV ─── */
 function renderNav() {
   document.getElementById('navStreak').textContent = '🔥 ' + state.streak;
   document.getElementById('navXP').textContent     = '⭐ ' + state.xp + ' XP';
 }
 
-/* ─── TOAST ─── */
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
