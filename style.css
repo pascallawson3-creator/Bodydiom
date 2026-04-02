@@ -254,24 +254,40 @@ a { color: inherit; text-decoration: none; }
   background: var(--accent-dim);
   border: 1px solid rgba(168,240,64,0.25);
   border-radius: 999px;
-  padding: 4px 12px;
+  padding: 4px 12px 4px 10px;
   font-size: 12px;
   font-weight: 700;
   color: var(--accent);
   white-space: nowrap;
 }
+.xp-pill::before {
+  content: '';
+  display: inline-block;
+  width: 10px; height: 10px;
+  background: var(--accent);
+  clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+  flex-shrink: 0;
+}
 .streak-pill {
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: rgba(240,100,40,0.14);
-  border: 1px solid rgba(240,100,40,0.28);
+  gap: 5px;
+  background: rgba(240,100,40,0.12);
+  border: 1px solid rgba(240,100,40,0.25);
   border-radius: 999px;
-  padding: 4px 10px;
+  padding: 4px 12px;
   font-size: 12px;
   font-weight: 700;
   color: #f06428;
   white-space: nowrap;
+}
+.streak-pill::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #f06428;
+  flex-shrink: 0;
 }
 .nav-user-badge {
   display: flex;
@@ -1168,3 +1184,19 @@ kbd {
   .sr-rating-row     { grid-template-columns: repeat(2, 1fr); }
   .usage-forge-panel { border-radius: var(--r-lg); }
 }
+
+/* ── USAGE FORGE EXTRA ─────────────────────────────────────────── */
+.uf-situation-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--tx-3); margin-bottom: 8px;
+}
+.uf-situation-text {
+  background: var(--bg-card-2); border-left: 3px solid var(--warn);
+  padding: 14px 16px; border-radius: 0 var(--r-md) var(--r-md) 0;
+  font-size: 15px; color: var(--tx); line-height: 1.6; margin-bottom: 18px;
+}
+.uf-q-prompt { font-size: 13px; color: var(--tx-2); font-weight: 600; margin-bottom: 12px; }
+
+/* nav SVG icon sizing */
+.nav-link .nl-icon svg { display: block; }
+.nav-link .nl-icon { display: flex; align-items: center; }

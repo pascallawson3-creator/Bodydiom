@@ -6,6 +6,7 @@
 <title>IdiomVault — Flashcards</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -24,7 +25,7 @@
       <input class="ob-input" id="obEmail" type="email" placeholder="e.g. alex@gmail.com" autocomplete="email">
     </div>
     <button class="ob-submit" onclick="saveOnboarding()">Enter the Vault →</button>
-    <span class="ob-skip" onclick="skipOnboarding()">Skip for now — explore first</span>
+    <span class="ob-skip" onclick="skipOnboarding()">Skip for now</span>
   </div>
 </div>
 
@@ -32,21 +33,24 @@
 <div class="modal-backdrop" id="emailModal">
   <div class="modal-card">
     <div id="emailModalForm">
-      <div class="modal-title">📬 Expression of the Day</div>
-      <p class="modal-sub">Send today's expression to your inbox and receive daily reminders to keep your streak alive.</p>
+      <div class="modal-title">Expression of the Day</div>
+      <p class="modal-sub">Get today's expression in your inbox and a daily reminder to keep your streak going.</p>
       <div class="email-preview" id="emailPreview">
         <div class="email-preview-label">Today's Expression</div>
         <div class="email-preview-expr" id="previewExpr">"Loading…"</div>
         <div class="email-preview-meaning" id="previewMeaning"></div>
       </div>
       <input class="modal-email-input" id="modalEmailInput" type="email" placeholder="Your email address">
-      <button class="modal-btn-send" onclick="sendEmailReminder()">📨 Send to My Inbox</button>
+      <button class="modal-btn-send" onclick="sendEmailReminder()" id="btnSendEmail">Send to My Inbox</button>
+      <div id="emailSendStatus" style="font-size:13px;color:var(--tx-3);text-align:center;margin-top:8px;min-height:20px;"></div>
       <button class="modal-btn-cancel" onclick="closeEmailModal()">Cancel</button>
     </div>
     <div class="modal-success" id="emailModalSuccess" style="display:none;">
-      <div class="modal-success-icon">✅</div>
+      <div style="font-size:52px;margin-bottom:14px;text-align:center;">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="var(--correct)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
       <div class="modal-success-title">Email sent!</div>
-      <p class="modal-success-msg">The expression <strong id="successExpr"></strong> has been sent to <strong id="successEmail"></strong>.<br><br>You'll receive a daily expression every morning to keep your learning on track. 🔥</p>
+      <p class="modal-success-msg"><strong id="successExpr"></strong> has been sent to <strong id="successEmail"></strong>.<br><br>You'll receive a daily idiom every morning to keep your streak alive.</p>
       <button class="modal-btn-cancel" onclick="closeEmailModal()" style="margin-top:20px;">Close</button>
     </div>
   </div>
@@ -56,668 +60,542 @@
 <nav class="nav">
   <div class="nav-logo">IdiomVault <span>by BODY</span></div>
   <div class="nav-links">
-    <a href="index.html"     class="nav-link active"><span class="nl-icon">🃏</span><span class="nl-text">Cards</span></a>
-    <a href="quiz.html"      class="nav-link"><span class="nl-icon">⚡</span><span class="nl-text">Quiz</span></a>
-    <a href="review.html"    class="nav-link"><span class="nl-icon">🔁</span><span class="nl-text">Review</span></a>
-    <a href="challenge.html" class="nav-link"><span class="nl-icon">🧠</span><span class="nl-text">Challenge</span></a>
-    <a href="progress.html"  class="nav-link"><span class="nl-icon">📊</span><span class="nl-text">Progress</span></a>
+    <a href="index.html"     class="nav-link active"><span class="nl-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span><span class="nl-text">Cards</span></a>
+    <a href="quiz.html"      class="nav-link"><span class="nl-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><span class="nl-text">Quiz</span></a>
+    <a href="review.html"    class="nav-link"><span class="nl-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.49"/></svg></span><span class="nl-text">Review</span></a>
+    <a href="challenge.html" class="nav-link"><span class="nl-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="nl-text">Challenge</span></a>
+    <a href="progress.html"  class="nav-link"><span class="nl-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nl-text">Progress</span></a>
   </div>
   <div class="nav-xp">
-    <div class="nav-user-badge" id="navUserBadge" style="display:none;">👤 <span id="navUserName"></span></div>
-    <div class="streak-pill" id="navStreak">🔥 0</div>
-    <div class="xp-pill" id="navXP">⭐ 0 XP</div>
+    <div class="nav-user-badge" id="navUserBadge" style="display:none;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span id="navUserName"></span></div>
+    <div class="streak-pill" id="navStreak">0</div>
+    <div class="xp-pill" id="navXP">0 XP</div>
   </div>
 </nav>
 
 <div class="xp-pop" id="xpPop">+10 XP</div>
 <div class="toast" id="toast"></div>
 
-<div class="page">
-  <div class="container">
+<div class="page"><div class="container">
 
-    <div class="page-hero">
-      <h1 class="page-hero-title" id="heroTitle"><em>Flashcard</em> Mode</h1>
-      <p class="page-hero-sub" id="heroSub">Tap any card to reveal its meaning</p>
-    </div>
+  <div class="page-hero">
+    <h1 class="page-hero-title" id="heroTitle"><em>Flashcard</em> Mode</h1>
+    <p class="page-hero-sub" id="heroSub">Tap any card to reveal its meaning</p>
+  </div>
 
-    <!-- Mascot banner -->
-    <div class="mascot-banner" id="mascotBanner">
-      <div class="mascot-emoji" id="mascotEmoji">🦊</div>
-      <div class="mascot-msg" id="mascotMsg">Ready to learn? Your vocabulary is waiting.</div>
-    </div>
+  <!-- Mascot -->
+  <div class="mascot-banner" id="mascotBanner">
+    <div class="mascot-emoji" id="mascotEmoji"></div>
+    <div class="mascot-msg" id="mascotMsg">Ready to learn?</div>
+  </div>
 
-    <!-- SR due banner -->
-    <div class="sr-due-banner" id="srDueBanner" style="display:none;">
-      <span id="srDueText">📅 3 expressions due for review</span>
-      <a href="review.html" id="srDueLink">Review now →</a>
-    </div>
+  <!-- SR due banner -->
+  <div class="sr-due-banner" id="srDueBanner" style="display:none;">
+    <span id="srDueText"></span>
+    <a href="review.html">Review now →</a>
+  </div>
 
-    <div class="stat-strip">
-      <div class="stat-item"><span class="stat-val" id="statTotal">198</span><span class="stat-lbl">Total</span></div>
-      <div class="stat-item"><span class="stat-val" id="statLearned">0</span><span class="stat-lbl">Learned</span></div>
-      <div class="stat-item"><span class="stat-val" id="statDue">0</span><span class="stat-lbl">Due</span></div>
-      <div class="stat-item"><span class="stat-val" id="statPct">0%</span><span class="stat-lbl">Done</span></div>
-    </div>
+  <div class="stat-strip">
+    <div class="stat-item"><span class="stat-val" id="statTotal">198</span><span class="stat-lbl">Total</span></div>
+    <div class="stat-item"><span class="stat-val" id="statLearned">0</span><span class="stat-lbl">Learned</span></div>
+    <div class="stat-item"><span class="stat-val" id="statDue">0</span><span class="stat-lbl">Due</span></div>
+    <div class="stat-item"><span class="stat-val" id="statPct">0%</span><span class="stat-lbl">Done</span></div>
+  </div>
 
-    <div class="filter-tabs" id="filterTabs">
-      <button class="filter-tab on" data-type="All">All</button>
-      <button class="filter-tab" data-type="idiom">Idiom</button>
-      <button class="filter-tab" data-type="proverb">Proverb</button>
-      <button class="filter-tab" data-type="slang">Slang</button>
-      <button class="filter-tab" data-type="phrasal verb">Phrasal Verb</button>
-      <button class="filter-tab" data-type="Due" id="tabDue">📅 Due</button>
-    </div>
+  <div class="filter-tabs" id="filterTabs">
+    <button class="filter-tab on" data-type="All">All</button>
+    <button class="filter-tab" data-type="idiom">Idiom</button>
+    <button class="filter-tab" data-type="proverb">Proverb</button>
+    <button class="filter-tab" data-type="slang">Slang</button>
+    <button class="filter-tab" data-type="phrasal verb">Phrasal</button>
+    <button class="filter-tab" data-type="Due" id="tabDue">Due</button>
+  </div>
 
-    <div class="deck-info">
-      <span id="deckPos">Card 1 of 198</span>
-      <span id="deckPct">0% complete</span>
-    </div>
-    <div class="progress-track" style="margin-bottom:20px;">
-      <div class="progress-fill" id="deckProgressFill" style="width:0%"></div>
-    </div>
+  <div class="deck-info">
+    <span id="deckPos">Card 1 of 198</span>
+    <span id="deckPct">0% complete</span>
+  </div>
+  <div class="progress-track" style="margin-bottom:20px;">
+    <div class="progress-fill" id="deckProgressFill" style="width:0%"></div>
+  </div>
 
-    <!-- Flashcard -->
-    <div class="flashcard-wrap">
-      <div class="flashcard" id="flashcard" onclick="revealCard()">
-        <div class="card-top-bar" id="cardBar"></div>
-        <div class="card-inner">
-          <div class="card-meta-row">
-            <span class="card-num" id="cardNum">#001</span>
-            <span class="type-badge" id="cardType">idiom</span>
-          </div>
-          <!-- SR status pill -->
-          <div id="cardSRStatus" style="margin-bottom:8px;"></div>
-          <div class="card-expr" id="cardExpr">Loading…</div>
-          <div class="card-tap-hint" id="tapHint"><span>👆</span> Tap to reveal meaning</div>
-          <div class="card-revealed" id="cardRevealed">
-            <div class="card-divider"><div class="card-divider-line"></div><div class="card-divider-dot"></div><div class="card-divider-line"></div></div>
-            <div class="meaning-label">Meaning</div>
-            <div class="meaning-text" id="cardMeaning"></div>
-            <div class="meaning-label" style="margin-top:16px;">Example</div>
-            <div class="example-text" id="cardExample"></div>
-          </div>
+  <!-- Flashcard -->
+  <div class="flashcard-wrap">
+    <div class="flashcard" id="flashcard" onclick="revealCard()">
+      <div class="card-top-bar" id="cardBar"></div>
+      <div class="card-inner">
+        <div class="card-meta-row">
+          <span class="card-num" id="cardNum">#001</span>
+          <span class="type-badge" id="cardType">idiom</span>
+        </div>
+        <div id="cardSRStatus" style="margin-bottom:6px;"></div>
+        <div class="card-expr" id="cardExpr">Loading…</div>
+        <div class="card-tap-hint" id="tapHint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+          Tap to reveal
+        </div>
+        <div class="card-revealed" id="cardRevealed">
+          <div class="card-divider"><div class="card-divider-line"></div><div class="card-divider-dot"></div><div class="card-divider-line"></div></div>
+          <div class="meaning-label">Meaning</div>
+          <div class="meaning-text" id="cardMeaning"></div>
+          <div class="meaning-label" style="margin-top:16px;">Example</div>
+          <div class="example-text" id="cardExample"></div>
         </div>
       </div>
     </div>
-
-    <!-- Audio row -->
-    <div class="audio-row">
-      <button class="btn-audio" id="btnUS" onclick="speakCard('US')"><span class="flag">🇺🇸</span> US <kbd>U</kbd></button>
-      <button class="btn-audio" id="btnUK" onclick="speakCard('UK')"><span class="flag">🇬🇧</span> UK <kbd>B</kbd></button>
-      <button class="btn-audio" onclick="playFullCard()">🎧 Full</button>
-    </div>
-
-    <!-- SR Rating buttons (shown after reveal) -->
-    <div id="srRatingRow" class="sr-rating-row" style="display:none;">
-      <button class="sr-btn missed"  onclick="rateSR('missed')">  <span class="sr-btn-emoji">😣</span>Raté<span class="sr-btn-emoji sr-interval" id="intMissed"></span></button>
-      <button class="sr-btn hard"    onclick="rateSR('hard')">    <span class="sr-btn-emoji">😬</span>Difficile<span class="sr-btn-emoji sr-interval" id="intHard"></span></button>
-      <button class="sr-btn correct" onclick="rateSR('correct')"> <span class="sr-btn-emoji">👍</span>Correct<span class="sr-btn-emoji sr-interval" id="intCorrect"></span></button>
-      <button class="sr-btn easy"    onclick="rateSR('easy')">    <span class="sr-btn-emoji">⚡</span>Facile<span class="sr-btn-emoji sr-interval" id="intEasy"></span></button>
-    </div>
-
-    <!-- Usage Forge panel (slides in after rating) -->
-    <div id="usageForgePanel" style="display:none;"></div>
-
-    <!-- Classic nav row -->
-    <div class="action-row-3" style="margin-bottom:10px;">
-      <button class="btn btn-ghost" onclick="prevCard()">← Prev</button>
-      <button class="btn btn-ghost" id="btnRandom" onclick="randomCard()">🎲 <kbd>R</kbd></button>
-      <button class="btn btn-ghost" onclick="nextCard()">Next →</button>
-    </div>
-
-    <div class="action-row-2">
-      <button class="btn-download" onclick="downloadCardAsPng()">⬇️ Save as PNG</button>
-      <button class="btn-email" onclick="openEmailModal()">📬 Email to Me</button>
-    </div>
-
   </div>
-</div>
 
-<!-- Hidden PNG card -->
+  <!-- Audio -->
+  <div class="audio-row">
+    <button class="btn-audio" id="btnUS" onclick="speakCard('US')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> US <kbd>U</kbd></button>
+    <button class="btn-audio" id="btnUK" onclick="speakCard('UK')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> UK <kbd>B</kbd></button>
+    <button class="btn-audio" onclick="playFullCard()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Full</button>
+  </div>
+
+  <!-- SR Rating -->
+  <div id="srRatingRow" class="sr-rating-row" style="display:none;">
+    <button class="sr-btn missed"  onclick="rateSR('missed')"><span class="sr-btn-emoji"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Raté<span class="sr-interval" id="intMissed">→ 1j</span></button>
+    <button class="sr-btn hard"    onclick="rateSR('hard')"><span class="sr-btn-emoji"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg></span>Difficile<span class="sr-interval" id="intHard">→ 1j</span></button>
+    <button class="sr-btn correct" onclick="rateSR('correct')"><span class="sr-btn-emoji"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>Correct<span class="sr-interval" id="intCorrect">→ 3j</span></button>
+    <button class="sr-btn easy"    onclick="rateSR('easy')"><span class="sr-btn-emoji"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg></span>Facile<span class="sr-interval" id="intEasy">→ 7j</span></button>
+  </div>
+
+  <!-- Usage Forge -->
+  <div id="usageForgePanel" style="display:none;"></div>
+
+  <div class="action-row-3" style="margin-bottom:10px;">
+    <button class="btn btn-ghost" onclick="prevCard()">← Prev</button>
+    <button class="btn btn-ghost" id="btnRandom" onclick="randomCard()">Shuffle <kbd>R</kbd></button>
+    <button class="btn btn-ghost" onclick="nextCard()">Next →</button>
+  </div>
+  <div class="action-row-2">
+    <button class="btn-download" onclick="downloadCardAsPng()">Save as PNG</button>
+    <button class="btn-email" onclick="openEmailModal()">Email to Me</button>
+  </div>
+
+</div></div>
+
+<!-- PNG hidden card -->
 <div id="pngCardWrap" style="position:fixed;top:-9999px;left:-9999px;width:600px;font-family:'DM Sans',system-ui,sans-serif;background:#0a0a0a;">
   <div id="pngCard" style="background:#111111;border:1px solid rgba(255,255,255,0.13);border-radius:24px;padding:44px 44px 36px;color:#f0ece4;width:600px;box-sizing:border-box;">
     <div id="pngBar" style="height:5px;border-radius:3px;margin-bottom:28px;background:#a8f040;"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
-      <div style="font-size:16px;font-weight:700;color:#a8f040;letter-spacing:-0.02em;">IdiomVault</div>
-      <div id="pngTypeBadge" style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:3px 12px;border-radius:999px;border:1px solid #4A8FD9;color:#4A8FD9;">idiom</div>
-    </div>
-    <div id="pngExpr" style="font-family:Georgia,serif;font-size:38px;font-weight:700;font-style:italic;line-height:1.15;letter-spacing:-0.02em;color:#f0ece4;margin-bottom:28px;">"Loading…"</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;"><div style="font-size:16px;font-weight:700;color:#a8f040;">IdiomVault</div><div id="pngTypeBadge" style="font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:3px 12px;border-radius:999px;border:1px solid #4A8FD9;color:#4A8FD9;">idiom</div></div>
+    <div id="pngExpr" style="font-family:Georgia,serif;font-size:38px;font-weight:700;font-style:italic;line-height:1.15;color:#f0ece4;margin-bottom:28px;"></div>
     <div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:24px;"></div>
     <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#4a4540;margin-bottom:10px;">MEANING</div>
     <div id="pngMeaning" style="font-size:19px;line-height:1.5;color:#f0ece4;margin-bottom:24px;"></div>
     <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#4a4540;margin-bottom:10px;">EXAMPLE</div>
     <div id="pngExample" style="font-family:Georgia,serif;font-size:15px;font-style:italic;line-height:1.6;color:#888070;background:#161616;border-left:3px solid rgba(255,255,255,0.22);padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:32px;"></div>
-    <div style="font-size:11px;color:#4a4540;letter-spacing:0.06em;text-align:right;">IdiomVault by BODY · Learn English idioms daily</div>
+    <div style="font-size:11px;color:#4a4540;text-align:right;">IdiomVault by BODY</div>
   </div>
 </div>
 
 <script src="data.js"></script>
 <script>
-const USER_KEY = 'iv3_user';
-const GREETINGS_RETURN = [
-  n=>`Welcome back, <em>${n}!</em>`, n=>`Keep going, <em>${n}!</em>`,
-  n=>`You're on fire, <em>${n}!</em>`, n=>`Great to see you, <em>${n}!</em>`,
-  n=>`Level up, <em>${n}!</em>`, n=>`Stay sharp, <em>${n}!</em>`,
-];
-const GREETINGS_FIRST = [n=>`Welcome, <em>${n}!</em>`, n=>`Let's learn, <em>${n}!</em>`];
+/* ─────────────────────────────────────────────
+   EMAILJS SETUP
+   1. Go to https://www.emailjs.com — sign up free
+   2. Create a service (Gmail, Outlook…)
+   3. Create a template with these variables:
+      {{to_email}} {{to_name}} {{expression}}
+      {{meaning}} {{example}} {{streak}} {{app_url}}
+   4. Replace the 3 constants below with your IDs
+   ───────────────────────────────────────────── */
+const EJS_SERVICE  = 'service_idiomvault';   // your service ID
+const EJS_TEMPLATE = 'template_daily';        // your template ID
+const EJS_KEY      = 'YOUR_PUBLIC_KEY';       // your public key
 
-let appState   = getState();
-let deck       = [...DATA];
-let deckIdx    = 0;
-let revealed   = false;
+try { emailjs.init({ publicKey: EJS_KEY }); } catch(e) {}
+
+/* ─────────────────────────────────────────────
+   USAGE FORGE — Rich contextual scenarios
+   Each entry: { situation, correct, wrongs[] }
+   Wrong options are plausible English phrases —
+   user must understand context, not just recognize
+   ───────────────────────────────────────────── */
+const UF_SCENARIOS = {
+  1: [{ situation:"Your colleague was laid off. Six months later he's running his own company earning twice his old salary. His former manager said:", correct:"It turned out to be a blessing in disguise.", wrongs:["He really burned the midnight oil to get there.","He was barking up the wrong tree all along."] }],
+  3: [{ situation:"James finished the 50-question exam in under 10 minutes and walked out smiling. When asked how it went:", correct:"Honestly? A piece of cake — I'd covered every topic.", wrongs:["I had to jump through so many hoops.","I was skating on thin ice the whole time."] }],
+  6: [{ situation:"The detective spent three weeks investigating the assistant. The real culprit was the CEO. When the case collapsed, his supervisor told him:", correct:"You were barking up the wrong tree from day one.", wrongs:["You really hit the nail on the head with that lead.","You need to get your act together."] }],
+  7: [{ situation:"Your manager schedules a meeting, talks about the weather for 10 minutes, and still hasn't said what it's about. You finally say:", correct:"Please stop beating around the bush and tell me why we're here.", wrongs:["Can you please face the music here?","Are you going to let the cat out of the bag?"] }],
+  9: [{ situation:"The product launches in 8 hours. The dev team is still fixing bugs at 2am. The tech lead messages the CEO:", correct:"The whole team is burning the midnight oil — we'll make it.", wrongs:["We're all in the same boat tonight.","The team is skating on thin ice."] }],
+  13:[{ situation:"A new building opened but residents immediately reported leaking pipes, cracked walls, and doors that don't close. The inspector concluded:", correct:"The contractor clearly cut corners on almost every aspect.", wrongs:["The contractor missed the boat on this project.","The contractor burned bridges with the city council."] }],
+  23:[{ situation:"The accountant hid losses for two years. When auditors discovered the fraud, his lawyer advised him to stop running and:", correct:"Face the music — a voluntary confession will reduce the sentence.", wrongs:["Pull the plug before it gets worse.","Throw in the towel and start fresh."] }],
+  48:[{ situation:"The surprise party for Claire was perfectly planned — until her flatmate called her that morning asking what time she was arriving 'for the party'. Her friend was furious:", correct:"You completely spilled the beans! It was supposed to be a secret.", wrongs:["You really stole her thunder there.","You pulled her leg at the worst moment."] }],
+  63:[{ situation:"At a corporate workshop, 25 strangers sit in silence. The facilitator starts with a quick fun game and suddenly people are talking. The organiser says:", correct:"That activity really broke the ice — everyone's engaging now.", wrongs:["That activity hit the ground running.","That activity burned the midnight oil."] }],
+  99:[{ situation:"The team complained about the unfair bonus system for months but nobody confronted HR. Finally, Amara scheduled a meeting with the director herself. Her colleague said:", correct:"Amara really took the bull by the horns — I respect that.", wrongs:["Amara is definitely on thin ice now.","Amara is really beating around the bush."] }],
+  101:[{ situation:"In the board meeting, everyone discussed marketing budgets, product timelines, and hiring. But nobody mentioned the company was running out of cash in 60 days. Afterwards, a board member said:", correct:"The real issue is the elephant in the room — nobody wants to say we're almost out of money.", wrongs:["That was the last straw for the investors.","The board really hit the nail on the head today."] }],
+  105:[{ situation:"After 18 months, the startup had burned through its seed funding with no traction. At the board meeting, the founder stood up and said:", correct:"I've decided to throw in the towel. The market isn't ready.", wrongs:["I've decided to face the music and pivot.","I need to get my ducks in a row."] }],
+  168:[{ situation:"After three great dates and hours of messages, Lucas suddenly stopped replying. No explanation. His friend asked what happened:", correct:"She completely ghosted me. No idea why.", wrongs:["She totally spilled the beans on me.","She bailed on me eventually."] }],
+  175:[{ situation:"After months of planning, the team finally launched the product and celebrated late into the night. The CEO wrote in the company Slack:", correct:"We had an absolute blast at the launch party — so proud of everyone.", wrongs:["We really went the extra mile last night.","We burned the midnight oil at the party."] }],
+};
+
+function getUFScenario(entry) {
+  const custom = UF_SCENARIOS[entry.n];
+  if (custom?.length) return custom[Math.floor(Math.random()*custom.length)];
+  // Fallback: blank-fill from example + same-type distractors
+  const blank = entry.example.replace(new RegExp(entry.expr.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i'),'___');
+  const wrongs = shuffle(DATA.filter(d=>d.n!==entry.n&&d.type===entry.type)).slice(0,2).map(d=>d.expr);
+  return { situation: blank, correct: entry.expr, wrongs, isFallback: true };
+}
+
+function esc(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+/* ─── APP STATE ─── */
+const USER_KEY = 'iv3_user';
+let appState = getState();
+let deck = [...DATA];
+let deckIdx = 0;
+let revealed = false;
 let activeType = 'All';
 let activeSpeakBtn = null;
-let pendingRating  = null; // rating chosen before usage forge
 
-(function init() {
+(function init(){
   appState = updateStreak(appState);
   saveState(appState);
   checkOnboarding();
-  applyDeck();
-  renderNav();
-  renderStats();
-  renderCard();
-  setupFilterTabs();
-  renderMascot();
-  renderSRDueBanner();
+  applyDeck(); renderNav(); renderStats(); renderCard();
+  setupFilterTabs(); renderMascot(); renderSRDueBanner();
 })();
 
-/* ── USER ─────────────────── */
-function getUser() {
-  try { return JSON.parse(localStorage.getItem(USER_KEY)) || null; } catch(e) { return null; }
+function getUser(){ try{return JSON.parse(localStorage.getItem(USER_KEY))||null;}catch(e){return null;} }
+
+function checkOnboarding(){
+  const u=getUser();
+  if(u){document.getElementById('onboardingScreen').style.display='none'; applyUserUI(u,false);}
 }
-function checkOnboarding() {
-  const user = getUser();
-  const screen = document.getElementById('onboardingScreen');
-  if (user) { screen.style.display = 'none'; applyUserUI(user, false); }
+function saveOnboarding(){
+  const el=document.getElementById('obName'); const n=el.value.trim();
+  if(!n){el.classList.add('ob-error');el.focus();return;}
+  const u={name:n,email:document.getElementById('obEmail').value.trim(),joinedAt:Date.now()};
+  localStorage.setItem(USER_KEY,JSON.stringify(u));
+  const sc=document.getElementById('onboardingScreen');
+  sc.classList.add('ob-hidden');
+  setTimeout(()=>{sc.style.display='none';sc.classList.remove('ob-hidden');},560);
+  applyUserUI(u,true); showToast(`Welcome, ${n}.`); renderMascot();
 }
-function saveOnboarding() {
-  const nameEl = document.getElementById('obName');
-  const emailEl = document.getElementById('obEmail');
-  const name = nameEl.value.trim();
-  if (!name) { nameEl.classList.add('ob-error'); nameEl.focus(); return; }
-  const user = { name, email: emailEl.value.trim(), joinedAt: Date.now() };
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
-  const screen = document.getElementById('onboardingScreen');
-  screen.classList.add('ob-hidden');
-  setTimeout(() => { screen.style.display='none'; screen.classList.remove('ob-hidden'); }, 560);
-  applyUserUI(user, true);
-  showToast(`Welcome, ${name}! 🎉 Let's begin.`);
-  renderMascot();
+function skipOnboarding(){
+  const sc=document.getElementById('onboardingScreen');
+  sc.classList.add('ob-hidden');
+  setTimeout(()=>{sc.style.display='none';sc.classList.remove('ob-hidden');},560);
 }
-function skipOnboarding() {
-  const screen = document.getElementById('onboardingScreen');
-  screen.classList.add('ob-hidden');
-  setTimeout(() => { screen.style.display='none'; screen.classList.remove('ob-hidden'); }, 560);
-}
-function applyUserUI(user, isNew) {
-  if (!user || !user.name) return;
-  document.getElementById('navUserBadge').style.display = 'flex';
-  document.getElementById('navUserName').textContent = user.name;
-  const pool = isNew ? GREETINGS_FIRST : GREETINGS_RETURN;
-  document.getElementById('heroTitle').innerHTML = pool[Math.floor(Math.random()*pool.length)](user.name);
-  if (user.email) document.getElementById('modalEmailInput').value = user.email;
+function applyUserUI(u,isNew){
+  if(!u?.name)return;
+  document.getElementById('navUserBadge').style.display='flex';
+  document.getElementById('navUserName').textContent=u.name;
+  const pool=isNew?[n=>`Welcome, <em>${n}.</em>`]:[n=>`Welcome back, <em>${n}.</em>`,n=>`Keep going, <em>${n}.</em>`,n=>`Let's level up, <em>${n}.</em>`];
+  document.getElementById('heroTitle').innerHTML=pool[Math.floor(Math.random()*pool.length)](u.name);
+  if(u.email) document.getElementById('modalEmailInput').value=u.email;
 }
 
-/* ── MASCOT ───────────────── */
-function renderMascot() {
-  const user   = getUser();
-  const name   = user ? user.name : null;
-  const info   = getMascotMessage(appState, name);
-  const banner = document.getElementById('mascotBanner');
-  const emoji  = document.getElementById('mascotEmoji');
-  const msg    = document.getElementById('mascotMsg');
-  const mState = getMascotState(appState.streak, appState.lastDate);
-  banner.className = 'mascot-banner ' + mState;
-  emoji.textContent = info.emoji;
-  msg.innerHTML = info.msg;
+/* ─── MASCOT ─── */
+function renderMascot(){
+  const u=getUser(); const info=getMascotMessage(appState,u?.name||null);
+  const ms=getMascotState(appState.streak,appState.lastDate);
+  const b=document.getElementById('mascotBanner');
+  b.className='mascot-banner '+ms;
+  // SVG mascot face — minimal geometric style
+  const colors={fire:'#f06428',happy:'#a8f040',sleeping:'#555',waiting:'#888070',default:'#a8f040'};
+  const c=colors[ms]||colors.default;
+  const mouth = ms==='sleeping'
+    ? '<path d="M10 18.5 Q12 17.5 14 18.5" stroke="#0a0a0a" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
+    : '<path d="M10 18 Q12 20 14 18" stroke="#0a0a0a" stroke-width="1.2" fill="none" stroke-linecap="round"/>';
+  const ears = ms==='fire'
+    ? '<path d="M9 8.5 L7 4 L11 7" fill="'+c+'" opacity="0.9"/><path d="M15 8.5 L17 4 L13 7" fill="'+c+'" opacity="0.9"/>'
+    : '<path d="M9 9 L7 5 L12 8" fill="'+c+'" opacity="0.7"/><path d="M15 9 L17 5 L12 8" fill="'+c+'" opacity="0.7"/>';
+  document.getElementById('mascotEmoji').innerHTML=`<svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">${ears}<circle cx="12" cy="14" r="8" fill="${c}" opacity="${ms==='sleeping'?'0.4':'0.9'}"/><circle cx="9.5" cy="13" r="1.3" fill="#0a0a0a"/><circle cx="14.5" cy="13" r="1.3" fill="#0a0a0a"/>${mouth}</svg>`;
+  document.getElementById('mascotMsg').textContent=info.msg;
 }
 
-/* ── SR DUE BANNER ────────── */
-function renderSRDueBanner() {
-  const due = getDueCards();
-  const banner = document.getElementById('srDueBanner');
-  const text   = document.getElementById('srDueText');
-  const tabDue = document.getElementById('tabDue');
-  if (due.length > 0) {
-    banner.style.display = 'flex';
-    text.textContent = `📅 ${due.length} expression${due.length>1?'s':''} due for review`;
-    tabDue.textContent = `📅 Due (${due.length})`;
+function renderSRDueBanner(){
+  const due=getDueCards(); const b=document.getElementById('srDueBanner');
+  if(due.length>0){
+    b.style.display='flex';
+    document.getElementById('srDueText').textContent=`${due.length} expression${due.length>1?'s':''} due for review today`;
+    document.getElementById('tabDue').textContent=`Due (${due.length})`;
   } else {
-    banner.style.display = 'none';
-    tabDue.textContent = '📅 Due';
+    b.style.display='none';
+    document.getElementById('tabDue').textContent='Due';
   }
 }
 
-/* ── FILTER TABS ──────────── */
-function setupFilterTabs() {
-  document.querySelectorAll('.filter-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('on'));
-      btn.classList.add('on');
-      activeType = btn.dataset.type;
-      applyDeck();
-      renderCard();
-      updateDeckProgress();
+function setupFilterTabs(){
+  document.querySelectorAll('.filter-tab').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on'); activeType=btn.dataset.type;
+      applyDeck(); renderCard(); updateDeckProgress();
     });
   });
 }
-function applyDeck() {
-  if (activeType === 'All')  deck = [...DATA];
-  else if (activeType === 'Due') deck = getDueCards().length ? getDueCards() : [...DATA];
-  else deck = DATA.filter(d => d.type === activeType);
-  if (!deck.length) deck = [...DATA];
-  deckIdx = Math.min(deckIdx, deck.length - 1);
-  if (deckIdx < 0) deckIdx = 0;
+function applyDeck(){
+  if(activeType==='All') deck=[...DATA];
+  else if(activeType==='Due'){const d=getDueCards();deck=d.length?d:[...DATA];}
+  else deck=DATA.filter(d=>d.type===activeType);
+  if(!deck.length)deck=[...DATA];
+  deckIdx=Math.max(0,Math.min(deckIdx,deck.length-1));
 }
 
-/* ── RENDER CARD ──────────── */
-function renderCard() {
-  if (!deck.length) return;
-  revealed = false;
-  const d   = deck[deckIdx];
-  const col = typeColor(d.type);
-
-  document.getElementById('cardBar').style.background = col;
-  document.getElementById('cardNum').textContent = '#' + String(d.n).padStart(3,'0');
-  document.getElementById('cardExpr').textContent = '"' + d.expr + '"';
-
-  const badge = document.getElementById('cardType');
-  badge.textContent = d.type;
-  badge.className   = 'type-badge type-' + (d.type === 'phrasal verb' ? 'phrasal' : d.type);
-
-  document.getElementById('cardMeaning').textContent = d.meaning;
-  document.getElementById('cardExample').textContent = d.example;
+function renderCard(){
+  if(!deck.length)return;
+  revealed=false;
+  const d=deck[deckIdx]; const col=typeColor(d.type);
+  document.getElementById('cardBar').style.background=col;
+  document.getElementById('cardNum').textContent='#'+String(d.n).padStart(3,'0');
+  document.getElementById('cardExpr').textContent='"'+d.expr+'"';
+  const badge=document.getElementById('cardType');
+  badge.textContent=d.type; badge.className='type-badge type-'+(d.type==='phrasal verb'?'phrasal':d.type);
+  document.getElementById('cardMeaning').textContent=d.meaning;
+  document.getElementById('cardExample').textContent=d.example;
   document.getElementById('cardRevealed').classList.remove('show');
-  document.getElementById('tapHint').style.display    = 'flex';
-  document.getElementById('srRatingRow').style.display = 'none';
-  document.getElementById('usageForgePanel').style.display = 'none';
-  document.getElementById('usageForgePanel').innerHTML = '';
-
-  // SR status pill
-  const srEl = document.getElementById('cardSRStatus');
-  const srStatus = getSRStatus(d.n);
-  if (srStatus === 'new') {
-    srEl.innerHTML = '';
-  } else if (srStatus === 'due') {
-    srEl.innerHTML = `<span class="card-sr-status due">📅 Due for review</span>`;
-  } else {
-    srEl.innerHTML = `<span class="card-sr-status future">🗓 Review ${srStatus}</span>`;
-  }
-
+  document.getElementById('tapHint').style.display='flex';
+  document.getElementById('srRatingRow').style.display='none';
+  document.getElementById('usageForgePanel').style.display='none';
+  document.getElementById('usageForgePanel').innerHTML='';
+  const s=getSRStatus(d.n);
+  document.getElementById('cardSRStatus').innerHTML=
+    s==='new'?'':
+    s==='due'?'<span class="card-sr-status due">Due for review</span>':
+    `<span class="card-sr-status future">Review ${s}</span>`;
   updateDeckProgress();
-  const fc = document.getElementById('flashcard');
-  fc.classList.remove('anim-popin');
-  void fc.offsetWidth;
-  fc.classList.add('anim-popin');
+  const fc=document.getElementById('flashcard');
+  fc.classList.remove('anim-popin');void fc.offsetWidth;fc.classList.add('anim-popin');
 }
 
-/* ── REVEAL ───────────────── */
-function revealCard() {
-  if (revealed) return;
-  revealed = true;
+function revealCard(){
+  if(revealed)return; revealed=true;
   document.getElementById('cardRevealed').classList.add('show');
-  document.getElementById('tapHint').style.display = 'none';
-  document.getElementById('srRatingRow').style.display = 'grid';
-  // Show next review intervals as preview
-  const d = deck[deckIdx];
-  const data = getSRData();
-  const rec = data[d.n] || { interval:1 };
-  document.getElementById('intMissed').textContent  = '→ 1j';
-  document.getElementById('intHard').textContent    = '→ ' + Math.max(Math.round(rec.interval/2),1) + 'j';
-  document.getElementById('intCorrect').textContent = '→ ' + Math.min(Math.max(rec.interval||1, 1)*2, 14) + 'j';
-  document.getElementById('intEasy').textContent    = '→ ' + Math.min(Math.round((rec.interval||1)*2.5), 14) + 'j';
+  document.getElementById('tapHint').style.display='none';
+  document.getElementById('srRatingRow').style.display='grid';
+  const d=deck[deckIdx]; const sr=getSRData(); const rec=sr[d.n]||{interval:1};
+  document.getElementById('intMissed').textContent='→ 1j';
+  document.getElementById('intHard').textContent='→ '+Math.max(Math.round(rec.interval/2),1)+'j';
+  document.getElementById('intCorrect').textContent='→ '+Math.min((rec.interval||1)*2,14)+'j';
+  document.getElementById('intEasy').textContent='→ '+Math.min(Math.round((rec.interval||1)*2.5),14)+'j';
 }
 
-/* ── SR RATING ────────────── */
-function rateSR(rating) {
-  const d = deck[deckIdx];
-  updateSR(d.n, rating);
-
-  if (rating === 'missed' || rating === 'hard') {
-    appState.difficult.add(d.n);
-    if (rating === 'missed') appState.learned.delete(d.n);
-  } else {
-    appState.learned.add(d.n);
-    appState.difficult.delete(d.n);
-    const xpGain = rating === 'easy' ? 15 : 10;
-    const isNew  = !appState.learned.has(d.n);
-    appState.xp += xpGain;
-    showXpPop('+' + xpGain + ' XP');
-    if (rating === 'correct' && appState.difficult.has(d.n)) {
-      incrementRecoveries();
-    }
+function rateSR(rating){
+  const d=deck[deckIdx]; updateSR(d.n,rating);
+  if(rating==='missed'){appState.difficult.add(d.n);appState.learned.delete(d.n);}
+  else if(rating==='hard'){appState.difficult.add(d.n);}
+  else{
+    const wasHard=appState.difficult.has(d.n);
+    appState.learned.add(d.n);appState.difficult.delete(d.n);
+    const xp=rating==='easy'?15:10; appState.xp+=xp; showXpPop('+'+xp+' XP');
+    if(wasHard)incrementRecoveries();
   }
-  saveState(appState);
-  renderNav();
-  renderStats();
-  checkBadges(appState, {});
-  renderSRDueBanner();
-
-  document.getElementById('srRatingRow').style.display = 'none';
-
-  // Trigger Usage Forge for new or missed cards
-  const data   = getSRData();
-  const rec    = data[d.n];
-  const isNew  = !rec || rec.reps <= 1;
-  if (isNew || rating === 'missed') {
-    showUsageForge(d, rating);
-  } else {
-    setTimeout(() => nextCard(), 320);
-  }
+  saveState(appState); renderNav(); renderStats(); checkBadges(appState,{}); renderSRDueBanner();
+  document.getElementById('srRatingRow').style.display='none';
+  const sr=getSRData();const rec=sr[d.n];
+  if(!rec||rec.reps<=1||rating==='missed') showUsageForge(d);
+  else setTimeout(nextCard,320);
 }
 
-/* ── USAGE FORGE ──────────── */
-const UF_SCENARIOS = {
-  'A blessing in disguise': [
-    { text:'Your friend got fired but found a dream job a month later. You say:',
-      opts:['That was a blessing in disguise!', "You really burned the midnight oil!", "You're barking up the wrong tree!"],
-      correct:0 },
-    { text:'Your flight was cancelled but you met someone special at the airport. You might say:',
-      opts:["That's killing two birds with one stone.", "What a blessing in disguise!", "You should face the music."],
-      correct:1 }
-  ]
-};
-
-function showUsageForge(entry, rating) {
-  const panel = document.getElementById('usageForgePanel');
-  panel.style.display = 'block';
-
-  // 50% scenario, 50% free write (cycle based on n)
-  const useScenario = (entry.n % 2 === 0);
-
-  if (useScenario) {
-    renderUFScenario(entry, panel);
-  } else {
-    renderUFFreeWrite(entry, panel);
-  }
+/* ─── USAGE FORGE ─── */
+function showUsageForge(entry){
+  const panel=document.getElementById('usageForgePanel');
+  panel.style.display='block';
+  if(entry.n%2!==0) renderUFScenario(entry,panel);
+  else renderUFFreeWrite(entry,panel);
 }
 
-function renderUFScenario(entry, panel) {
-  // Build 3 scenario options: 1 contextually correct + 2 plausible wrong
-  const others  = shuffle(DATA.filter(d=>d.n!==entry.n)).slice(0,2);
-  const opts    = shuffle([
-    { text: entry.expr, correct: true },
-    { text: others[0].expr, correct: false },
-    { text: others[1].expr, correct: false },
-  ]);
-  const situation = entry.example.replace(new RegExp(entry.expr.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i'),'___');
-
-  panel.innerHTML = `
+function renderUFScenario(entry,panel){
+  const sc=getUFScenario(entry);
+  const opts=shuffle([{text:sc.correct,ok:true},...sc.wrongs.map(w=>({text:w,ok:false}))]);
+  const label=sc.isFallback?'Complete the sentence:':'Read carefully — what fits here?';
+  panel.innerHTML=`
     <div class="usage-forge-panel">
       <div class="uf-header">
-        <div class="uf-title">🌍 Usage Forge</div>
-        <span class="uf-skip" onclick="skipUsageForge()">Skip →</span>
+        <div class="uf-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Context Challenge</div>
+        <span class="uf-skip" onclick="skipUsageForge()">Skip</span>
       </div>
       <div class="uf-body">
-        <div class="uf-prompt">Which expression best completes this sentence?</div>
-        <div class="uf-prompt" style="font-style:italic;color:var(--tx-3);margin-bottom:16px;">"${situation}"</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--tx-3);margin-bottom:8px;">${label}</div>
+        <div style="background:var(--bg-card-2);border-left:3px solid var(--warn);padding:14px 16px;border-radius:0 var(--r-md) var(--r-md) 0;font-size:15px;color:var(--tx);line-height:1.6;margin-bottom:18px;">"${sc.situation}"</div>
+        <div style="font-size:13px;color:var(--tx-2);margin-bottom:12px;font-weight:600;">Which expression fits best?</div>
         <div class="uf-options" id="ufOpts">
-          ${opts.map((o,i)=>`<button class="uf-opt" onclick="checkUFScenario(${i},${o.correct})" data-idx="${i}">${o.text}</button>`).join('')}
+          ${opts.map(o=>`<button class="uf-opt" data-ok="${o.ok}" onclick="checkUFScenario(this,${o.ok},'${esc(entry.expr)}','${esc(entry.meaning)}')">${o.text}</button>`).join('')}
         </div>
         <div class="uf-feedback" id="ufFeedback"></div>
       </div>
     </div>`;
 }
 
-function checkUFScenario(idx, isCorrect) {
-  document.querySelectorAll('.uf-opt').forEach((b,i) => {
-    b.disabled = true;
-    if (b.dataset.idx == idx && isCorrect)  b.classList.add('uf-correct');
-    if (b.dataset.idx == idx && !isCorrect) b.classList.add('uf-wrong');
+function checkUFScenario(btn,isOk,expr,meaning){
+  document.querySelectorAll('.uf-opt').forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.ok==='true')b.classList.add('uf-correct');
   });
-  const fb = document.getElementById('ufFeedback');
-  fb.className = 'uf-feedback show' + (isCorrect ? '' : ' bad');
-  if (isCorrect) {
-    fb.innerHTML = `✓ Correct! <strong>"${deck[deckIdx].expr}"</strong> is used in exactly this kind of situation.`;
-    appState.xp += 5;
-    saveState(appState);
-    renderNav();
-    incrementUsageCount();
-    checkBadges(appState, {});
-    showXpPop('+5 XP');
+  if(!isOk)btn.classList.add('uf-wrong');
+  const fb=document.getElementById('ufFeedback');
+  fb.className='uf-feedback show'+(isOk?'':' bad'); fb.style.display='block';
+  if(isOk){
+    fb.innerHTML=`<strong style="color:var(--correct)">Correct.</strong> "${expr}" fits here because: ${meaning}<br><span style="font-size:13px;color:var(--tx-3);margin-top:6px;display:block;">This is exactly the type of situation where native speakers naturally use this expression.</span>`;
+    appState.xp+=5;saveState(appState);renderNav();incrementUsageCount();checkBadges(appState,{});showXpPop('+5 XP');
   } else {
-    fb.innerHTML = `The correct answer is <strong>"${deck[deckIdx].expr}"</strong>. ${deck[deckIdx].meaning}`;
+    fb.innerHTML=`<strong style="color:var(--wrong)">Not quite.</strong> The right answer is <strong>"${expr}"</strong><br><span style="font-size:14px;color:var(--tx-2);margin-top:6px;display:block;">${meaning}</span><span style="font-size:13px;color:var(--tx-3);margin-top:6px;display:block;">The other options don't fit because they describe different situations and emotions.</span>`;
   }
-  setTimeout(() => nextCard(), 1800);
+  setTimeout(nextCard,2800);
 }
 
-function renderUFFreeWrite(entry, panel) {
-  panel.innerHTML = `
+function renderUFFreeWrite(entry,panel){
+  panel.innerHTML=`
     <div class="usage-forge-panel">
       <div class="uf-header">
-        <div class="uf-title">✍️ Usage Forge</div>
-        <span class="uf-skip" onclick="skipUsageForge()">Skip →</span>
+        <div class="uf-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Write it yourself</div>
+        <span class="uf-skip" onclick="skipUsageForge()">Skip</span>
       </div>
       <div class="uf-body">
-        <div class="uf-prompt">Write a sentence using <strong>"${entry.expr}"</strong>:</div>
-        <textarea class="uf-textarea" id="ufInput" placeholder='e.g. "Losing my old job was a blessing in disguise…"' rows="3"></textarea>
-        <button class="btn btn-primary btn-full" onclick="submitUFFreeWrite('${entry.expr.replace(/'/g,"\\'")}')">Check my sentence →</button>
-        <div class="uf-feedback" id="ufFeedback"></div>
+        <div class="uf-prompt">Use <strong>"${entry.expr}"</strong> in a real sentence from your own life or work:</div>
+        <div style="font-size:12px;color:var(--tx-3);margin-bottom:14px;">Tip: think of a concrete moment where you'd actually say this.</div>
+        <textarea class="uf-textarea" id="ufInput" placeholder="e.g. Losing that client was a blessing in disguise — we found a much better one." rows="3"></textarea>
+        <button class="btn btn-primary btn-full" id="ufSubmitBtn" onclick="submitUFFreeWrite('${esc(entry.expr)}','${esc(entry.meaning)}')">Check my sentence →</button>
+        <div class="uf-feedback" id="ufFeedback" style="display:none;"></div>
       </div>
     </div>`;
 }
 
-function submitUFFreeWrite(expr) {
-  const input = document.getElementById('ufInput').value.trim();
-  if (!input || input.length < 6) {
-    showToast('Write at least a short sentence first!');
-    return;
+async function submitUFFreeWrite(expr,meaning){
+  const input=document.getElementById('ufInput').value.trim();
+  if(!input||input.length<8){showToast('Write a real sentence first.');return;}
+  const btn=document.getElementById('ufSubmitBtn');
+  btn.disabled=true;btn.textContent='Analysing…';
+  const fb=document.getElementById('ufFeedback');
+  fb.style.display='block';fb.className='uf-feedback show';
+  fb.innerHTML='<div class="uf-loading">Checking your sentence…</div>';
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:160,
+        system:`You are a concise English teacher. Reply with exactly 3 parts separated by the pipe character |: VERDICT|EXPLANATION|IMPROVED. VERDICT = "CORRECT" or "NEEDS WORK" only. EXPLANATION = 1 sentence about why. IMPROVED = the sentence rewritten naturally (if correct, a polished version; if wrong, the corrected version). No markdown, no extra text.`,
+        messages:[{role:'user',content:`Idiom: "${expr}" (${meaning})\nUser wrote: "${input}"\nIs the idiom used naturally and correctly in context?`}]
+      })
+    });
+    const data=await resp.json();
+    const raw=(data.content||[]).map(b=>b.text||'').join('').trim();
+    const [verdict,expl,improved]=(raw+'||').split('|').map(s=>s.trim());
+    const ok=verdict.toUpperCase().includes('CORRECT');
+    fb.className='uf-feedback show'+(ok?'':' bad');
+    fb.innerHTML=`
+      <div style="font-weight:700;font-size:15px;color:${ok?'var(--correct)':'var(--wrong)'};margin-bottom:8px;">${ok?'Well used':'Needs adjustment'}</div>
+      <div style="font-size:14px;color:var(--tx-2);margin-bottom:12px;">${expl||''}</div>
+      <div style="background:var(--bg-card);border-left:3px solid ${ok?'var(--correct)':'var(--accent)'};padding:10px 14px;border-radius:0 6px 6px 0;font-style:italic;font-size:14px;color:var(--tx-2);">"${improved||input}"</div>`;
+    incrementUsageCount();appState.xp+=5;saveState(appState);renderNav();checkBadges(appState,{});showXpPop('+5 XP');
+  }catch(e){
+    const hasIt=input.toLowerCase().includes(expr.toLowerCase().split(' ').slice(0,2).join(' ').toLowerCase());
+    fb.className='uf-feedback show'+(hasIt?'':' bad');
+    fb.innerHTML=hasIt
+      ?`<strong>Looks good.</strong> Using "${expr}" in context like this is exactly how fluency is built.`
+      :`Make sure your sentence actually uses <strong>"${expr}"</strong>. The expression must appear in your sentence.`;
+    if(hasIt){incrementUsageCount();appState.xp+=5;saveState(appState);renderNav();}
   }
-  const fb = document.getElementById('ufFeedback');
-  fb.className = 'uf-feedback show';
-  fb.innerHTML = `<div class="uf-loading">Analysing your sentence…</div>`;
-
-  const prompt = `The English idiom is: "${expr}".
-The user wrote: "${input}"
-Check if the idiom is used naturally and correctly. 
-Reply in 2 sentences maximum: first confirm if correct or suggest a natural fix, then give one brief tip about register or tone. Be encouraging. Don't use markdown.`;
-
-  fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 120,
-      messages: [{ role:'user', content: prompt }]
-    })
-  })
-  .then(r => r.json())
-  .then(data => {
-    const text = (data.content||[]).map(b=>b.text||'').join('');
-    const isGood = text.toLowerCase().includes('correct') || text.toLowerCase().includes('well') || text.toLowerCase().includes('natural') || text.toLowerCase().includes('great') || text.toLowerCase().includes('perfect');
-    fb.className = 'uf-feedback show' + (isGood ? '' : ' bad');
-    fb.innerHTML = text || 'Good effort! Keep practising with this expression.';
-    incrementUsageCount();
-    appState.xp += 5;
-    saveState(appState);
-    renderNav();
-    checkBadges(appState, {});
-    showXpPop('+5 XP');
-  })
-  .catch(() => {
-    fb.className = 'uf-feedback show';
-    fb.innerHTML = `Good effort! Keep using <strong>"${expr}"</strong> in context — that's how fluency builds.`;
-    incrementUsageCount();
-  })
-  .finally(() => {
-    setTimeout(() => nextCard(), 3000);
-  });
+  setTimeout(nextCard,3500);
 }
 
-function skipUsageForge() {
-  document.getElementById('usageForgePanel').style.display = 'none';
-  nextCard();
-}
+function skipUsageForge(){document.getElementById('usageForgePanel').style.display='none';nextCard();}
 
-/* ── NAVIGATION ───────────── */
-function nextCard() {
-  document.getElementById('usageForgePanel').style.display = 'none';
-  deckIdx = (deckIdx + 1) % deck.length;
-  if (deckIdx === 0) showToast('🎉 Deck complete! Starting from the top.');
-  renderCard();
-}
-function prevCard() {
-  document.getElementById('usageForgePanel').style.display = 'none';
-  deckIdx = (deckIdx - 1 + deck.length) % deck.length;
-  renderCard();
-}
-function randomCard() {
-  if (deck.length <= 1) return;
-  let newIdx;
-  do { newIdx = Math.floor(Math.random() * deck.length); } while (newIdx === deckIdx);
-  deckIdx = newIdx;
-  const btn = document.getElementById('btnRandom');
-  btn.style.transform = 'scale(1.15) rotate(20deg)';
-  setTimeout(() => { btn.style.transform = ''; }, 250);
-  renderCard();
-  showToast('🎲 Random card!');
-}
+/* ─── NAV ─── */
+function nextCard(){document.getElementById('usageForgePanel').style.display='none';deckIdx=(deckIdx+1)%deck.length;if(deckIdx===0)showToast('Deck complete. Starting over.');renderCard();}
+function prevCard(){document.getElementById('usageForgePanel').style.display='none';deckIdx=(deckIdx-1+deck.length)%deck.length;renderCard();}
+function randomCard(){if(deck.length<=1)return;let n;do{n=Math.floor(Math.random()*deck.length);}while(n===deckIdx);deckIdx=n;const b=document.getElementById('btnRandom');b.style.transform='scale(1.1) rotate(15deg)';setTimeout(()=>b.style.transform='',200);renderCard();}
+function updateDeckProgress(){const t=deck.length;const l=deck.filter(d=>appState.learned.has(d.n)).length;const p=t?Math.round(l/t*100):0;document.getElementById('deckPos').textContent=`Card ${deckIdx+1} of ${t}`;document.getElementById('deckPct').textContent=p+'% complete';document.getElementById('deckProgressFill').style.width=p+'%';}
+function renderStats(){const l=appState.learned.size;document.getElementById('statTotal').textContent=DATA.length;document.getElementById('statLearned').textContent=l;document.getElementById('statDue').textContent=getDueCards().length;document.getElementById('statPct').textContent=Math.round(l/DATA.length*100)+'%';updateDeckProgress();}
+function renderNav(){document.getElementById('navStreak').textContent=appState.streak+' streak';document.getElementById('navXP').textContent=appState.xp+' XP';}
 
-/* ── DECK PROGRESS ────────── */
-function updateDeckProgress() {
-  const total = deck.length;
-  const learnedCount = deck.filter(d => appState.learned.has(d.n)).length;
-  const pct = total ? Math.round((learnedCount/total)*100) : 0;
-  document.getElementById('deckPos').textContent = `Card ${deckIdx+1} of ${total}`;
-  document.getElementById('deckPct').textContent = `${pct}% complete`;
-  document.getElementById('deckProgressFill').style.width = pct + '%';
-}
-
-/* ── RENDER STATS ─────────── */
-function renderStats() {
-  const learnedCount = appState.learned.size;
-  const pct = Math.round((learnedCount/DATA.length)*100);
-  document.getElementById('statTotal').textContent   = DATA.length;
-  document.getElementById('statLearned').textContent = learnedCount;
-  document.getElementById('statDue').textContent     = getDueCards().length;
-  document.getElementById('statPct').textContent     = pct + '%';
-  updateDeckProgress();
-}
-
-function renderNav() {
-  document.getElementById('navStreak').textContent = '🔥 ' + appState.streak;
-  document.getElementById('navXP').textContent     = '⭐ ' + appState.xp + ' XP';
-}
-
-/* ── AUDIO ────────────────── */
-function getVoice(lang) {
-  return window.speechSynthesis.getVoices().find(v => v.lang.startsWith(lang)) || null;
-}
-function speakCard(variant) {
-  if (!window.speechSynthesis) { showToast('⚠️ Speech not supported'); return; }
-  window.speechSynthesis.cancel();
-  if (activeSpeakBtn) { activeSpeakBtn.classList.remove('speaking'); activeSpeakBtn = null; }
-  const btnId = variant === 'US' ? 'btnUS' : 'btnUK';
-  const btn = document.getElementById(btnId);
-  btn.classList.add('speaking');
-  activeSpeakBtn = btn;
-  const d = deck[deckIdx];
-  const utterance = new SpeechSynthesisUtterance(d.expr);
-  utterance.lang  = variant === 'US' ? 'en-US' : 'en-GB';
-  utterance.rate  = 0.82;
-  function doSpeak() {
-    const voice = getVoice(utterance.lang);
-    if (voice) utterance.voice = voice;
-    window.speechSynthesis.speak(utterance);
-  }
-  if (window.speechSynthesis.getVoices().length) doSpeak();
-  else window.speechSynthesis.addEventListener('voiceschanged', doSpeak, { once:true });
-  utterance.onend = utterance.onerror = () => { btn.classList.remove('speaking'); if (activeSpeakBtn===btn) activeSpeakBtn=null; };
-  showToast(variant==='US' ? '🇺🇸 American English' : '🇬🇧 British English');
-}
-function playFullCard() {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  if (activeSpeakBtn) { activeSpeakBtn.classList.remove('speaking'); activeSpeakBtn=null; }
-  const d  = deck[deckIdx];
-  const u1 = new SpeechSynthesisUtterance(d.expr);        u1.lang='en-US'; u1.rate=0.80;
-  const u2 = new SpeechSynthesisUtterance('The meaning is: '+d.meaning); u2.lang='en-US'; u2.rate=0.88;
-  const u3 = new SpeechSynthesisUtterance('For example: '+d.example);  u3.lang='en-GB'; u3.rate=0.88;
-  function startAll() {
-    const vUS = getVoice('en-US'); const vUK = getVoice('en-GB');
-    if (vUS) { u1.voice=vUS; u2.voice=vUS; } if (vUK) u3.voice=vUK;
-    window.speechSynthesis.speak(u1); window.speechSynthesis.speak(u2); window.speechSynthesis.speak(u3);
-  }
-  if (window.speechSynthesis.getVoices().length) startAll();
-  else window.speechSynthesis.addEventListener('voiceschanged', startAll, { once:true });
-  showToast('🎧 Playing full card…');
-}
-
-/* ── PNG DOWNLOAD ─────────── */
-function downloadCardAsPng() {
-  const d = deck[deckIdx];
-  const col = typeColor(d.type);
-  document.getElementById('pngBar').style.background  = col;
-  document.getElementById('pngExpr').textContent       = '"' + d.expr + '"';
-  document.getElementById('pngMeaning').textContent    = d.meaning;
-  document.getElementById('pngExample').textContent    = d.example;
-  const tb = document.getElementById('pngTypeBadge');
-  tb.textContent = d.type; tb.style.color = col; tb.style.borderColor = col;
-  const wrap = document.getElementById('pngCardWrap');
-  wrap.style.top='−9999px'; wrap.style.left='0px';
-  showToast('📸 Generating image…');
-  html2canvas(document.getElementById('pngCard'), { backgroundColor:'#111111', scale:2, useCORS:true, logging:false })
-    .then(canvas => {
-      wrap.style.left='-9999px';
-      const link = document.createElement('a');
-      link.download = 'idiomvault_' + d.expr.replace(/[^a-z0-9]/gi,'_').toLowerCase().slice(0,40) + '.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      showToast('✅ Image saved!');
-    })
-    .catch(() => { wrap.style.left='-9999px'; showToast('⚠️ Could not generate image.'); });
-}
-
-/* ── EMAIL MODAL ──────────── */
-function openEmailModal() {
-  const d = deck[deckIdx];
-  document.getElementById('previewExpr').textContent    = '"' + d.expr + '"';
-  document.getElementById('previewMeaning').textContent = d.meaning;
-  document.getElementById('emailModalForm').style.display    = 'block';
-  document.getElementById('emailModalSuccess').style.display = 'none';
-  const user = getUser();
-  if (user && user.email && !document.getElementById('modalEmailInput').value)
-    document.getElementById('modalEmailInput').value = user.email;
+/* ─── EMAIL ─── */
+function openEmailModal(){
+  const d=deck[deckIdx];
+  document.getElementById('previewExpr').textContent='"'+d.expr+'"';
+  document.getElementById('previewMeaning').textContent=d.meaning;
+  document.getElementById('emailModalForm').style.display='block';
+  document.getElementById('emailModalSuccess').style.display='none';
+  document.getElementById('emailSendStatus').textContent='';
+  document.getElementById('btnSendEmail').disabled=false;
+  document.getElementById('btnSendEmail').textContent='Send to My Inbox';
+  const u=getUser();if(u?.email)document.getElementById('modalEmailInput').value=u.email;
   document.getElementById('emailModal').classList.add('open');
 }
-function closeEmailModal() { document.getElementById('emailModal').classList.remove('open'); }
-function sendEmailReminder() {
-  const ei = document.getElementById('modalEmailInput');
-  const email = ei.value.trim();
-  if (!email || !email.includes('@')) { ei.focus(); ei.style.borderColor='var(--wrong)'; setTimeout(()=>{ei.style.borderColor='';},2000); return; }
-  const d = deck[deckIdx];
-  document.getElementById('emailModalForm').style.display    = 'none';
-  document.getElementById('emailModalSuccess').style.display = 'block';
-  document.getElementById('successExpr').textContent  = '"' + d.expr + '"';
-  document.getElementById('successEmail').textContent = email;
+function closeEmailModal(){document.getElementById('emailModal').classList.remove('open');}
+async function sendEmailReminder(){
+  const ei=document.getElementById('modalEmailInput');const email=ei.value.trim();
+  if(!email||!email.includes('@')){ei.style.borderColor='var(--wrong)';setTimeout(()=>ei.style.borderColor='',2000);return;}
+  const d=deck[deckIdx];const u=getUser();
+  const btn=document.getElementById('btnSendEmail');
+  const st=document.getElementById('emailSendStatus');
+  btn.disabled=true;btn.textContent='Sending…';
+  try{
+    await emailjs.send(EJS_SERVICE,EJS_TEMPLATE,{to_email:email,to_name:u?.name||'Learner',expression:d.expr,meaning:d.meaning,example:d.example,streak:appState.streak,app_url:window.location.origin});
+    document.getElementById('emailModalForm').style.display='none';
+    document.getElementById('emailModalSuccess').style.display='block';
+    document.getElementById('successExpr').textContent='"'+d.expr+'"';
+    document.getElementById('successEmail').textContent=email;
+    if(u&&!u.email){u.email=email;localStorage.setItem(USER_KEY,JSON.stringify(u));}
+  }catch(err){
+    btn.disabled=false;btn.textContent='Send to My Inbox';
+    st.innerHTML='<span style="color:var(--wrong)">Send failed. <a href="https://emailjs.com" target="_blank" style="color:var(--accent)">Set up EmailJS first</a> — it\'s free.</span>';
+  }
 }
-document.getElementById('emailModal').addEventListener('click', function(e) { if (e.target===this) closeEmailModal(); });
+document.getElementById('emailModal').addEventListener('click',function(e){if(e.target===this)closeEmailModal();});
 
-/* ── TOAST & XP POP ───────── */
+/* ─── AUDIO ─── */
+function getVoice(l){return window.speechSynthesis.getVoices().find(v=>v.lang.startsWith(l))||null;}
+function speakCard(v){
+  if(!window.speechSynthesis)return;window.speechSynthesis.cancel();
+  if(activeSpeakBtn){activeSpeakBtn.classList.remove('speaking');activeSpeakBtn=null;}
+  const id=v==='US'?'btnUS':'btnUK';const btn=document.getElementById(id);
+  btn.classList.add('speaking');activeSpeakBtn=btn;
+  const d=deck[deckIdx];const u=new SpeechSynthesisUtterance(d.expr);
+  u.lang=v==='US'?'en-US':'en-GB';u.rate=0.82;
+  function go(){const vc=getVoice(u.lang);if(vc)u.voice=vc;window.speechSynthesis.speak(u);}
+  if(window.speechSynthesis.getVoices().length)go();
+  else window.speechSynthesis.addEventListener('voiceschanged',go,{once:true});
+  u.onend=u.onerror=()=>{btn.classList.remove('speaking');if(activeSpeakBtn===btn)activeSpeakBtn=null;};
+}
+function playFullCard(){
+  if(!window.speechSynthesis)return;window.speechSynthesis.cancel();
+  const d=deck[deckIdx];
+  const u1=new SpeechSynthesisUtterance(d.expr);u1.lang='en-US';u1.rate=0.80;
+  const u2=new SpeechSynthesisUtterance('Meaning: '+d.meaning);u2.lang='en-US';u2.rate=0.88;
+  const u3=new SpeechSynthesisUtterance('Example: '+d.example);u3.lang='en-GB';u3.rate=0.88;
+  function go(){const vUS=getVoice('en-US');const vUK=getVoice('en-GB');if(vUS){u1.voice=vUS;u2.voice=vUS;}if(vUK)u3.voice=vUK;window.speechSynthesis.speak(u1);window.speechSynthesis.speak(u2);window.speechSynthesis.speak(u3);}
+  if(window.speechSynthesis.getVoices().length)go();else window.speechSynthesis.addEventListener('voiceschanged',go,{once:true});
+}
+
+/* ─── PNG ─── */
+function downloadCardAsPng(){
+  const d=deck[deckIdx];const col=typeColor(d.type);
+  document.getElementById('pngBar').style.background=col;
+  document.getElementById('pngExpr').textContent='"'+d.expr+'"';
+  document.getElementById('pngMeaning').textContent=d.meaning;
+  document.getElementById('pngExample').textContent=d.example;
+  const tb=document.getElementById('pngTypeBadge');tb.textContent=d.type;tb.style.color=col;tb.style.borderColor=col;
+  const w=document.getElementById('pngCardWrap');w.style.top='-9999px';w.style.left='0px';
+  showToast('Generating image…');
+  html2canvas(document.getElementById('pngCard'),{backgroundColor:'#111111',scale:2,useCORS:true,logging:false})
+    .then(canvas=>{w.style.left='-9999px';const a=document.createElement('a');a.download='idiomvault_'+d.expr.replace(/[^a-z0-9]/gi,'_').toLowerCase().slice(0,40)+'.png';a.href=canvas.toDataURL('image/png');a.click();showToast('Image saved.');})
+    .catch(()=>{w.style.left='-9999px';showToast('Could not generate image.');});
+}
+
+/* ─── TOAST / XP ─── */
 let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
-}
-function showXpPop(msg) {
-  const el = document.getElementById('xpPop');
-  el.textContent = msg; el.classList.remove('fly');
-  void el.offsetWidth; el.classList.add('fly');
-}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200);}
+function showXpPop(msg){const el=document.getElementById('xpPop');el.textContent=msg;el.classList.remove('fly');void el.offsetWidth;el.classList.add('fly');}
 
-/* ── KEYBOARD ─────────────── */
-document.addEventListener('keydown', e => {
-  if (document.getElementById('onboardingScreen').style.display !== 'none') return;
-  if (document.getElementById('emailModal').classList.contains('open')) return;
-  const key = e.key;
-  if (key==='ArrowRight'||key===' ') { e.preventDefault(); revealed ? nextCard() : revealCard(); }
-  if (key==='ArrowLeft')  { e.preventDefault(); prevCard(); }
-  if (key.toLowerCase()==='u') speakCard('US');
-  if (key.toLowerCase()==='b') speakCard('UK');
-  if (key.toLowerCase()==='r') randomCard();
+/* ─── KEYBOARD ─── */
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('onboardingScreen').style.display!=='none')return;
+  if(document.getElementById('emailModal').classList.contains('open'))return;
+  if(e.target.tagName==='TEXTAREA')return;
+  const k=e.key;
+  if(k==='ArrowRight'||k===' '){e.preventDefault();revealed?nextCard():revealCard();}
+  if(k==='ArrowLeft'){e.preventDefault();prevCard();}
+  if(k.toLowerCase()==='u')speakCard('US');
+  if(k.toLowerCase()==='b')speakCard('UK');
+  if(k.toLowerCase()==='r')randomCard();
 });
 </script>
 </body>
